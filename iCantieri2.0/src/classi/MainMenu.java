@@ -55,11 +55,12 @@ public class MainMenu {
 
 				try {
 
-					String tipoLav = new Credenziali().verificaLogin(textUser.getText(), textPass.getPassword());
 
-					if (tipoLav != null) {
+					Lavoratore lavoratore = new Credenziali().verificaLogin(textUser.getText(), textPass.getPassword());
 
-						if (tipoLav.equals("AMMINISTRATORE"))
+					if (lavoratore.getTipoLav() != null) {
+
+						if (lavoratore.getTipoLav().equals("AMMINISTRATORE"))
 
 						{
 
@@ -67,11 +68,11 @@ public class MainMenu {
 
 						}
 
-						if (tipoLav.equals("CAPOC"))
+						if (lavoratore.getTipoLav().equals("CAPOC"))
 
 						{
 
-							// metti qua una funzione per recuperare idcantiere
+							
 							openCapocWindow(frame);
 
 						}

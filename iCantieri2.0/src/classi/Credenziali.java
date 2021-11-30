@@ -36,7 +36,7 @@ public class Credenziali {
 	
 	//funzione che restituisce restituisce tipolav se il login è andato bene
 	
-	String verificaLogin(String username, char[] password) throws SQLException, IOException {
+	Lavoratore verificaLogin(String username, char[] password) throws SQLException, IOException {
 		// TODO Auto-generated method stub
 		Connection conn = new Database().getDefaultConnection();
 		String query = "SELECT * FROM CREDENZIALI WHERE utente=? and password=?";
@@ -67,14 +67,19 @@ public class Credenziali {
 			}
 			pstmt.close();
 		
-	    String tipoLav=null;
+	   String errore="ERRORE";
 		
-	    if (i) {
-	    tipoLav=new Lavoratore().verificaTipoUtente(credenziali.getIdLav());
-		}
+	   /*Se i è true quindi significa che ha trovato utente con user e password inseriti mi controlla di che tipo di utente
+	   si tratta, se non trova niente ritorna null */
+	   
+	   
+	    
+	   Lavoratore lavoratore=new Lavoratore().verificaTipoUtente(credenziali.getIdLav());
 		
 		
-		return tipoLav;
+	    
+		
+		return lavoratore;
 		
 	}
 	
