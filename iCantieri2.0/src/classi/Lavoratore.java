@@ -53,7 +53,7 @@ public class Lavoratore {
 	
 	
 	
-	//funzione che crea un menu diverso a seconda della tipologia di lavoratore
+	//funzione che crea un menu diverso a seconda della tipologia di amministratore o capocantiere
 	
 	protected String verificaTipoUtente(int idLav) throws SQLException, IOException {
 		// TODO Auto-generated method stub
@@ -63,17 +63,18 @@ public class Lavoratore {
 		String query = "select * from VIEW_TIPO_LAV where IDLAV=?";
 
 		Lavoratore lavoratore = new Lavoratore();
-		if(conn != null) {
-			
+		
+		
 			pstmt = conn.prepareStatement(query);
+			pstmt.setInt(1, idLav);
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				
-				lavoratore.setTipoLav(rs.getString("tipoLav"));
+				lavoratore.setTipoLav(rs.getString(1));
 				
 			}
 			pstmt.close();
-		}
+		
 		
 		
 		

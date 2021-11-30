@@ -34,48 +34,50 @@ public class Credenziali {
 	}
 	
 	
-	//funzione che restituisce restituisce idlav se il login è andato bene
+	//funzione che restituisce restituisce tipolav se il login è andato bene
 	
-	boolean  verificaLogin(String username, char[] password) throws SQLException, IOException {
+	String verificaLogin(String username, char[] password) throws SQLException, IOException {
 		// TODO Auto-generated method stub
 		Connection conn = new Database().getDefaultConnection();
-		PreparedStatement pstmt;
-		ResultSet rs;
 		String query = "SELECT * FROM CREDENZIALI WHERE utente=? and password=?";
+		PreparedStatement pstmt=conn.prepareStatement(query);
+		
 		boolean i=false;
 		
+		String s=String.copyValueOf(password);
+		
+	
+		
+		pstmt.setString(1, username);
+		pstmt.setString(2, s);
+		ResultSet rs=pstmt.executeQuery();
+		
+		
+		
 		Credenziali credenziali = new Credenziali();
-		if(conn != null) {
-			
-			pstmt = conn.prepareStatement(query);
-			rs = pstmt.executeQuery();
-			while(rs.next()) {
+		
 				
-				credenziali.setNomeUtente(rs.getString("nomeUtente"));
-				credenziali.setPassword(rs.getString("password"));
-				credenziali.setIdLav(rs.getInt("idLav"));
+		while (rs.next()) {
+				
+				credenziali.setNomeUtente(rs.getString(1));
+				credenziali.setPassword(rs.getString(2));
+				credenziali.setIdLav(rs.getInt(3));
 				
 				i=true;
 			}
 			pstmt.close();
+		
+	    String tipoLav=null;
+		
+	    if (i) {
+	    tipoLav=new Lavoratore().verificaTipoUtente(credenziali.getIdLav());
 		}
 		
-		if (i) {
-		new Lavoratore().verificaTipoUtente(credenziali.getIdLav());
-		}
 		
-		
-		return i;
+		return tipoLav;
 		
 	}
 	
-
-	
-	
-	
-	
-	
-	
-	
+		
 
 }
