@@ -70,8 +70,8 @@ public class Lavoratore {
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				
-				lavoratore.setTipoLav(rs.getString(1));
-				lavoratore.setIdCant(rs.getInt(5));
+				lavoratore.setTipoLav(rs.getString(5));
+				lavoratore.setIdCant(rs.getInt(6));
 			}
 			pstmt.close();
 		

@@ -73,7 +73,7 @@ public class MainMenu {
 						{
 
 							
-							openCapocWindow(frame);
+							openCapocWindow(frame, lavoratore.getIdCant());
 
 						}
 
@@ -211,10 +211,10 @@ public class MainMenu {
 		frame.setVisible(true);
 	}
 
-	protected void openCapocWindow(JFrame frame) {
+	protected void openCapocWindow(JFrame frame, int idCant) {
 
 		MainMenu app = new MainMenu();
-		Component contents = app.createCapocComponents(frame);
+		Component contents = app.createCapocComponents(frame, idCant);
 
 		frame.getContentPane().removeAll();
 		frame.setPreferredSize(new Dimension(800, 800));
