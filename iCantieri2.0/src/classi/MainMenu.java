@@ -278,13 +278,13 @@ public class MainMenu {
 
 		ButtonAree.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				openCantieriWindow(frame);
+				openAreaWindow(frame);
 			}
 		});
 
 		ButtonOperai.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				openOperaiWindow(frame);
+				openOperaiWindow(frame, idCantiere);
 			}
 		});
 
@@ -306,7 +306,19 @@ public class MainMenu {
 
 	}
 
-	protected void openOperaiWindow(JFrame frame) { // Funzione per accedere agli operai
+	protected void openOperaiWindow(JFrame frame, int idCant) { // Funzione per accedere agli operai
+		
+		try {
+			new CapoC_View().showListaOperaiView(frame, idCant);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 
 	}
 

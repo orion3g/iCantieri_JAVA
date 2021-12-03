@@ -67,7 +67,7 @@ public class Credenziali {
 			}
 			pstmt.close();
 		
-	   String errore="ERRORE";
+	;
 		
 	   /*Se i è true quindi significa che ha trovato utente con user e password inseriti mi controlla di che tipo di utente
 	   si tratta, se non trova niente ritorna null */
