@@ -198,7 +198,7 @@ public class MainMenu {
 		return panelContainer;
 	}
 
-	protected void openAmministratoreWindow(JFrame frame) {
+	protected static void openAmministratoreWindow(JFrame frame) {
 
 		MainMenu app = new MainMenu();
 		Component contents = app.createAmministratoreComponents(frame);
@@ -211,7 +211,7 @@ public class MainMenu {
 		frame.setVisible(true);
 	}
 
-	protected void openCapocWindow(JFrame frame, int idCant) {
+	 protected static void openCapocWindow(JFrame frame, int idCant) {
 
 		MainMenu app = new MainMenu();
 		Component contents = app.createCapocComponents(frame, idCant);
@@ -309,7 +309,7 @@ public class MainMenu {
 	protected void openOperaiWindow(JFrame frame, int idCant) { // Funzione per accedere agli operai
 		
 		try {
-			new CapoC_View().showListaOperaiView(frame, idCant);
+			new CapoC_Operai().showListaOperaiView(frame, idCant);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

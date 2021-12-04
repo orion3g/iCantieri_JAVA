@@ -3,6 +3,9 @@ package classi;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JFrame;
@@ -73,6 +76,38 @@ public class Helper {
 		    return true;
 		}
 		
+		//Funzione che controlla che l'operaio sia maggiorenne
+				public static boolean isMaggiorenne(String strNum) {
+				    if (strNum == null) {
+				        return false;
+				    }
+				   
+				    	  SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+				    	  Date d = null;
+						try {
+							d = sdf.parse(strNum);
+						} catch (ParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				    	  Calendar c = Calendar.getInstance();
+				    	  c.setTime(d);
+				    	  int year = c.get(Calendar.YEAR);
+				    	  int month = c.get(Calendar.MONTH) + 1;
+				    	  int date = c.get(Calendar.DATE);
+				    	  LocalDate l1 = LocalDate.of(year, month, date);
+				    	  LocalDate now1 = LocalDate.now();
+				    	  Period diff1 = Period.between(l1, now1);
+				    	 
+				    	  if ((diff1.getYears())>=18) {
+				    		  
+				    		  return true;
+				    	  }
+				    
+				    	  else
+				    
+				    return false;
+				}
 		
 		//Funzione che controlla che la stringa sia convertibile in una data
 		public static boolean isDate(String strNDate, String dateFormat) {
@@ -91,6 +126,8 @@ public class Helper {
 		    return true;
 		}
 		
+	
+				
 		
 		//Funzione che mostra un messaggio d'errore
 		public static void showErrorMessage(JFrame frame, String message) {
@@ -101,6 +138,9 @@ public class Helper {
 		public static void showSuccessMessage(JFrame frame, String message) {
 			JOptionPane.showMessageDialog(frame, message, "OPERAZIONE COMPLETATA", JOptionPane.INFORMATION_MESSAGE);
 		}
+		
+		
+		
 	
 	
 }
