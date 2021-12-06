@@ -228,7 +228,7 @@ public class MainMenu {
 	public Component createAmministratoreComponents(JFrame frame) {
 		// funzione utilizzata per creare la pagina per l'amministratore
 
-		GridLayout layout = new GridLayout(3, 1); // Definisco un group layout
+		GridLayout layout = new GridLayout(4, 1); // Definisco un group layout
 		layout.setVgap(20);
 
 		JPanel bodyPanel = new JPanel(layout); // Panel da inviare alla funzione chiamante
@@ -236,7 +236,9 @@ public class MainMenu {
 		JButton ButtonCantieri = new JButton("CANTIERI");
 		JButton ButtonAree = new JButton("AREE");
 		JButton ButtonOperai = new JButton("OPERAI");
-
+		JButton ButtonTornaAlLogin = new JButton("Torna al login");
+		
+		
 		ButtonCantieri.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				openCantieriWindow(frame);
@@ -251,13 +253,20 @@ public class MainMenu {
 
 		ButtonOperai.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				openCantieriWindow(frame);
+				openOperaiWindow(frame, 0);
+			}
+		});
+		
+		ButtonTornaAlLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				showLogin(frame);
 			}
 		});
 
 		bodyPanel.add(ButtonCantieri); // Aggiungo i vari elementi al panel
 		bodyPanel.add(ButtonOperai);
 		bodyPanel.add(ButtonAree);
+		bodyPanel.add(ButtonTornaAlLogin);
 
 		bodyPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
@@ -275,6 +284,7 @@ public class MainMenu {
 
 		JButton ButtonAree = new JButton("AREE");
 		JButton ButtonOperai = new JButton("OPERAI");
+		JButton ButtonTornaAlLogin = new JButton("Torna al login");
 
 		ButtonAree.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -287,10 +297,17 @@ public class MainMenu {
 				openOperaiWindow(frame, idCantiere);
 			}
 		});
+		
+		ButtonTornaAlLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				showLogin(frame);
+			}
+		});
 
 		// Aggiungo i vari elementi al panel
 		bodyPanel.add(ButtonOperai);
 		bodyPanel.add(ButtonAree);
+		bodyPanel.add(ButtonTornaAlLogin);
 
 		bodyPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
@@ -309,7 +326,7 @@ public class MainMenu {
 	protected void openOperaiWindow(JFrame frame, int idCant) { // Funzione per accedere agli operai
 		
 		try {
-			new CapoC_Operai().showListaOperaiView(frame, idCant);
+			new OperaiWindows().showListaOperaiView(frame, idCant);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

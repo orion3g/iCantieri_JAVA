@@ -103,10 +103,89 @@ public class Lavoratore {
 		
 	}
 	
+	// Funzione che restituisce una MAP contenente gli operai del cantiere passato
+	// contenuti in una tabella nel database
+	public List<Lavoratore> getOperaiPerCant(int idCant) throws IOException, SQLException {
+		List<Lavoratore> operai = new ArrayList<Lavoratore>();
+		Connection conn = new Database().getDefaultConnection();
+		PreparedStatement pstmt;
+		ResultSet rs;
 
-		
-		
+		String query = "SELECT * FROM LAVORATORE WHERE IDCANT=? AND TIPOLAV='OPERAIO SEMPLICE'"; // Query in SQL
+		if (conn != null) {
+			pstmt = conn.prepareStatement(query);
+			pstmt.setInt(1, idCant);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Lavoratore lavoratore = new Lavoratore();
+				lavoratore.setIdLav(rs.getInt(1));
+				lavoratore.setNome(rs.getString(2));
+				lavoratore.setCognome(rs.getString(3));
+				lavoratore.setDataNascita(rs.getString(4));
+				lavoratore.setTipoLav(rs.getString(5));
+				lavoratore.setIdCant(rs.getInt(6));
+
+				operai.add(lavoratore);
+			}
+			pstmt.close();
+		}
+		return operai;
+	}
 	
+	//Funzione che restituisce tutti gli operai 
 	
+	public List<Lavoratore> getAllOperai() throws IOException, SQLException {
+		List<Lavoratore> operai = new ArrayList<Lavoratore>();
+		Connection conn = new Database().getDefaultConnection();
+		PreparedStatement pstmt;
+		ResultSet rs;
+
+		String query = "SELECT * FROM LAVORATORE WHERE TIPOLAV='OPERAIO SEMPLICE'"; // Query in SQL
+		if (conn != null) {
+			pstmt = conn.prepareStatement(query);
+
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Lavoratore lavoratore = new Lavoratore();
+				lavoratore.setIdLav(rs.getInt(1));
+				lavoratore.setNome(rs.getString(2));
+				lavoratore.setCognome(rs.getString(3));
+				lavoratore.setDataNascita(rs.getString(4));
+				lavoratore.setTipoLav(rs.getString(5));
+				lavoratore.setIdCant(rs.getInt(6));
+
+				operai.add(lavoratore);
+			}
+			pstmt.close();
+		}
+		return operai;
+	}
+		
+	// Funzione che restituisce un oggetto Lavoratore contenuto in una tabella nel
+	// database e con l'id corrispondente all'id passato come parametro	
+	public Lavoratore getOperaio(int idOperaio) throws IOException, SQLException {
+		Lavoratore lavoratore = new Lavoratore();
+		Connection conn = new Database().getDefaultConnection();
+		PreparedStatement pstmt;
+		ResultSet rs;
+
+		String query = "SELECT * FROM LAVORATORE WHERE IDLAV=?"; // Query in SQL
+		if (conn != null) {
+			pstmt = conn.prepareStatement(query);
+			pstmt.setInt(1, idOperaio);
+
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				lavoratore.setIdLav(rs.getInt(1));
+				lavoratore.setNome(rs.getString(2));
+				lavoratore.setCognome(rs.getString(3));
+				lavoratore.setDataNascita(rs.getString(4));
+				lavoratore.setTipoLav(rs.getString(5));
+				lavoratore.setIdCant(rs.getInt(6));
+			}
+			pstmt.close();
+		}
+		return lavoratore;
+	}
 
 }

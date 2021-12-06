@@ -43,6 +43,26 @@ public class Helper {
 	}
 	
 	
+	//Funzione che converte una List<Lavoratore> in un Object[][] necessario per la costruzione di una JTable per Amministratore
+		public static Object[][] ConvertOperaioListToObjectAmministratore(List<Lavoratore> list){
+			Object[][] result = new Object[list.size()][5];
+			for(int i = 0; i < list.size(); i++){
+			    result[i][0] = list.get(i).getIdLav();
+			    result[i][1] = list.get(i).getNome();
+			    result[i][2] = list.get(i).getCognome();
+			   
+			    
+			    String dataConvertita = convertDate(dateTimeFormatDb, dateFormatApp, list.get(i).getDataNascita());	
+			    //Converto la data nel formato adeguato
+				result[i][3] = dataConvertita;
+				
+				result[i][4]=list.get(i).getIdCant();
+				
+			}
+			return result;
+		}
+		
+	
 	//Funzione che converte una data da un formato ad un altro
 	public static String convertDate(String parserString, String formatterString, String data) {
 		Date convertedDate = null;
@@ -126,7 +146,7 @@ public class Helper {
 		    return true;
 		}
 		
-	
+
 				
 		
 		//Funzione che mostra un messaggio d'errore

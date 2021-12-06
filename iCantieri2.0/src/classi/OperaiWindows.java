@@ -20,6 +20,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -28,7 +29,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
-public class CapoC_Operai {
+public class OperaiWindows {
 
 	private String message = "Errore durante il salvataggio, verificare che i campi siano compilati correttamente.";
 
@@ -41,72 +42,38 @@ public class CapoC_Operai {
 	}
 
 	private static int idCant;
+	
+	Lavoratore lavoratore=new Lavoratore();
+	
 
-	// Funzione che restituisce una MAP contenente gli operai del cantiere passato
-	// contenuti in una tabella nel database
+	
+	// Funzione che restituisce una MAP contenente tutti gli operai del
+		// contenuti in una tabella nel database
 
-	private List<Lavoratore> getOperai() throws IOException, SQLException {
-		List<Lavoratore> operai = new ArrayList<Lavoratore>();
-		Connection conn = new Database().getDefaultConnection();
-		PreparedStatement pstmt;
-		ResultSet rs;
-
-		String query = "SELECT * FROM LAVORATORE WHERE IDCANT=? AND TIPOLAV='OPERAIO SEMPLICE'"; // Query in SQL
-		if (conn != null) {
-			pstmt = conn.prepareStatement(query);
-			pstmt.setInt(1, idCant);
-			rs = pstmt.executeQuery();
-			while (rs.next()) {
-				Lavoratore lavoratore = new Lavoratore();
-				lavoratore.setIdLav(rs.getInt(1));
-				lavoratore.setNome(rs.getString(2));
-				lavoratore.setCognome(rs.getString(3));
-				lavoratore.setDataNascita(rs.getString(4));
-				lavoratore.setTipoLav(rs.getString(5));
-				lavoratore.setIdCant(rs.getInt(6));
-
-				operai.add(lavoratore);
-			}
-			pstmt.close();
-		}
-		return operai;
-	}
-
-	// Funzione che restituisce un oggetto Lavoratore contenuto in una tabella nel
-	// database e con l'id corrispondente all'id passato come parametro
-	private Lavoratore getOperaio(int idOperaio) throws IOException, SQLException {
-		Lavoratore lavoratore = new Lavoratore();
-		Connection conn = new Database().getDefaultConnection();
-		PreparedStatement pstmt;
-		ResultSet rs;
-
-		String query = "SELECT * FROM LAVORATORE WHERE IDCANT=? AND IDLAV=?"; // Query in SQL
-		if (conn != null) {
-			pstmt = conn.prepareStatement(query);
-			pstmt.setInt(1, idCant);
-			pstmt.setInt(2, idOperaio);
-
-			rs = pstmt.executeQuery();
-			while (rs.next()) {
-				lavoratore.setIdLav(rs.getInt(1));
-				lavoratore.setNome(rs.getString(2));
-				lavoratore.setCognome(rs.getString(3));
-				lavoratore.setDataNascita(rs.getString(4));
-				lavoratore.setTipoLav(rs.getString(5));
-				lavoratore.setIdCant(rs.getInt(6));
-			}
-			pstmt.close();
-		}
-		return lavoratore;
-	}
 
 	// Funzione che mostra la pagina che contiene la lista degli operai
 	public void showListaOperaiView(JFrame frame, int idCantiere) throws IOException, SQLException {
 
 		idCant = idCantiere;
-		List<Lavoratore> operai = getOperai();
-		Component contents = createListaOperaiComponents(operai, frame);
-		// Utilizzo la funzione che mi restituisce un panel da inserire nel frame
+
+		Component contents = null;
+
+		// se idCant è uguale a 0 nella lista mi elenco tutti gli operai, mentre se è
+		// diverso da zero mi elenco solo gli operai
+		// di un particolare cantiere
+
+		if (idCant != 0) {
+			List<Lavoratore> operai = lavoratore.getOperaiPerCant(idCant);
+			// Utilizzo la funzione che mi restituisce un panel da inserire nel frame
+
+			contents = createListaOperaiCapoCComponents(operai, frame);
+		}
+
+		else {
+			
+			List<Lavoratore> operai = lavoratore.getAllOperai();
+			contents = createListaOperaiAmministratorrComponents(operai, frame);
+		}
 
 		frame.getContentPane().removeAll(); // Pulisco il frame esistente
 		frame.getContentPane().add(contents, BorderLayout.CENTER); // Inserisco i nuovi componenti nel frame
@@ -114,15 +81,12 @@ public class CapoC_Operai {
 		frame.setVisible(true);
 	}
 
-	// Funzione utilizzata per creare la pagina che contiene la lista degli operai
+	// Funzione utilizzata per creare la pagina che contiene la lista degli operai per i CapoCantieri
 
-	private Component createListaOperaiComponents(List<Lavoratore> operai, JFrame frame) {
+	private Component createListaOperaiCapoCComponents(List<Lavoratore> operai, JFrame frame) {
 		Font headerFont = new Font("SansSerif", Font.BOLD, 20);
 		Font tableFont = new Font("Arial", Font.PLAIN, 18);
-		
-		
-	
-		
+
 		String[] columnNames = { "ID", "NOME", "COGNOME", "DATA NASCITA" }; // Lista degli header della tabella
 		Object[][] data = Helper.ConvertOperaioListToObject(operai); // Elementi della tabella
 
@@ -154,13 +118,12 @@ public class CapoC_Operai {
 		table.getColumnModel().getColumn(1).setPreferredWidth(500);
 		table.getColumnModel().getColumn(2).setPreferredWidth(200);
 		table.getColumnModel().getColumn(3).setPreferredWidth(200);
+		
+		
 
 		JScrollPane scrollPanel = new JScrollPane(table);
 		scrollPanel.setPreferredSize(new Dimension(1500, 1000));
-		
-		
-		
-		
+
 		JLabel pageLabel = new JLabel("Lista Operai");
 		pageLabel.setFont(headerFont);
 
@@ -220,12 +183,116 @@ public class CapoC_Operai {
 
 		return panelContainer;
 	}
+	
+	// Funzione utilizzata per creare la pagina che contiene la lista degli operai per gli Amministratori
+	
+	private Component createListaOperaiAmministratorrComponents(List<Lavoratore> operai, JFrame frame) {
+		Font headerFont = new Font("SansSerif", Font.BOLD, 20);
+		Font tableFont = new Font("Arial", Font.PLAIN, 18);
+
+		String[] columnNames = { "ID", "NOME", "COGNOME", "DATA NASCITA", "IDCANTIERE" }; // Lista degli header della tabella
+		Object[][] data = Helper.ConvertOperaioListToObjectAmministratore(operai); // Elementi della tabella
+
+		JTable table = new JTable(data, columnNames); // Creo la tabella riempendola con i dati
+		table.getTableHeader().setFont(headerFont);
+		table.setDefaultEditor(Object.class, null); // Rendo la tabella non editabile
+		table.addMouseListener(new MouseAdapter() { // Creo una funzione che consente di aprire la scheda dell'oggetto
+			public void mouseClicked(MouseEvent me) {
+				if (me.getClickCount() == 2) { // Sul doppio click parte la funzione
+					JTable target = (JTable) me.getSource();
+					int row = target.getSelectedRow(); // Seleziono la riga
+					Integer idLav = (Integer) target.getValueAt(row, 0); // Seleziono l'id corrispondente a quella riga
+					try {
+						showModificaOperaioView(frame, idLav);
+					} catch (IOException | SQLException e) {
+						// TODO Auto-generated catch block
+						Helper.showErrorMessage(frame, "Errore durante il cambio pagina"); // Potrebbe avvenire qualche
+																							// errore durante il cambio
+																							// pagina(connessione
+																							// fallita per esempio)
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		table.setFont(tableFont);
+		table.setRowHeight(30);
+		table.getColumnModel().getColumn(0).setPreferredWidth(100);
+		table.getColumnModel().getColumn(1).setPreferredWidth(500);
+		table.getColumnModel().getColumn(2).setPreferredWidth(200);
+		table.getColumnModel().getColumn(3).setPreferredWidth(200);
+
+		JScrollPane scrollPanel = new JScrollPane(table);
+		scrollPanel.setPreferredSize(new Dimension(1500, 1000));
+
+		JLabel pageLabel = new JLabel("Lista Operai");
+		pageLabel.setFont(headerFont);
+
+		JButton createOperaioButton = new JButton("Aggiungi Operaio"); // Bottone per aggiungere un operaio alla lista
+		createOperaioButton.setPreferredSize(new Dimension(100, 50));
+		createOperaioButton.setBackground(Color.GREEN);
+		createOperaioButton.setForeground(Color.BLACK);
+		createOperaioButton.setFont(new Font("Arial", Font.PLAIN, 20));
+		createOperaioButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				try {
+					showCreaOperaioView(frame);
+				} catch (IOException | SQLException e) {
+					// TODO Auto-generated catch block
+					Helper.showErrorMessage(frame, "Errore durante il cambio pagina"); // Potrebbe avvenire qualche
+																						// errore durante il cambio
+																						// pagina(connessione fallita
+																						// per esempio)
+					e.printStackTrace();
+				}
+			}
+		});
+
+		JButton mainMenuButton = new JButton("Torna al menu"); // Bottone per tornare al menu principale
+		mainMenuButton.setPreferredSize(new Dimension(100, 50));
+		mainMenuButton.setFont(new Font("Arial", Font.PLAIN, 20));
+		mainMenuButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+
+				MainMenu.openAmministratoreWindow(frame);
+			}
+		});
+
+		JPanel panelContainer = new JPanel();
+		panelContainer.add(pageLabel);
+		panelContainer.add(scrollPanel);
+		panelContainer.add(createOperaioButton);
+		panelContainer.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+
+		GroupLayout layout = new GroupLayout(panelContainer);
+		panelContainer.setLayout(layout);
+
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+
+		layout.setHorizontalGroup(layout.createSequentialGroup()
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(pageLabel)
+						.addComponent(scrollPanel)
+						.addGroup(layout.createSequentialGroup()
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+										.addComponent(createOperaioButton))
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+										.addComponent(mainMenuButton)))));
+		layout.setVerticalGroup(layout.createSequentialGroup().addComponent(pageLabel).addComponent(scrollPanel)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(createOperaioButton)
+						.addComponent(mainMenuButton)));
+
+		return panelContainer;
+	}
 
 	// Quando questa funzione viene richiamata mostra la pagina che consente la
 	// modifica degli operai
 	private void showModificaOperaioView(JFrame frame, Integer idLav) throws IOException, SQLException {
-		Lavoratore operaio = getOperaio(idLav);
-		Component contents = createModificaOperaioComponents(frame, operaio); // Utilizzo la funzione che mi restituisce
+
+		
+		lavoratore=lavoratore.getOperaio(idLav);
+		
+		Component contents = createModificaOperaioComponents(frame, lavoratore); // Utilizzo la funzione che mi restituisce
 																				// un
 																				// panel da inserire nel frame
 
@@ -346,13 +413,14 @@ public class CapoC_Operai {
 								e.printStackTrace();
 							}
 						} else {
-							setMessage("Il campo data nascita deve avere un formato dd/mm/yyyy e l'operaio deve essere maggiorenne"); // I
-																									// campi
-																									// non
-																									// sono
-																									// stati
-																									// compilati
-																									// correttamente
+							setMessage(
+									"Il campo data nascita deve avere un formato dd/mm/yyyy e l'operaio deve essere maggiorenne"); // I
+							// campi
+							// non
+							// sono
+							// stati
+							// compilati
+							// correttamente
 						}
 				}
 
@@ -572,7 +640,10 @@ public class CapoC_Operai {
 		dataNascitaMeseLabel.setFont(labelFont);
 		JLabel dataNascitaAnnoLabel = new JLabel("Anno(yyyy)");
 		dataNascitaAnnoLabel.setFont(labelFont);
-
+		
+		String[] petStrings = { "Bird", "Cat", "Dog", "Rabbit", "Pig" };
+		JComboBox comboBoxCantiere = new JComboBox(petStrings);
+	
 		JTextField nomeTF = new JTextField(); // Campi da compilare
 		nomeTF.setFont(normalFont);
 		JTextField cognomeTF = new JTextField();
@@ -605,6 +676,7 @@ public class CapoC_Operai {
 				String dataNascita = dataNascitaGiorno + "/" + dataNascitaMese + "/" + dataNascitaAnno;
 				Boolean result = false;
 
+				
 				Lavoratore operaio = new Lavoratore();
 
 				if (nome.isEmpty() || cognome.isEmpty() || dataNascita.isEmpty()) { // Controllo che non ci siano campi
@@ -629,7 +701,7 @@ public class CapoC_Operai {
 								result = saveOperaio(operaio);
 							} catch (IOException | SQLException e) {
 								// TODO Auto-generated catch block
-								e.printStackTrace();
+								setMessage("Nel DB non ci possono essere due operai con nome, cognome e data di nascita uguali");
 							}
 						} else {
 							setMessage(
@@ -733,8 +805,12 @@ public class CapoC_Operai {
 						.addComponent(dataNascitaAnnoLabel).addComponent(dataNascitaAnnoTF))
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(salvaButton)
 						.addComponent(tornaAllaListaButton)));
+		
+		
 
 		return panelContainer;
 	}
 
+
+	
 }
