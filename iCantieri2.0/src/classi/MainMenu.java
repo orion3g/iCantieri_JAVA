@@ -321,6 +321,15 @@ public class MainMenu {
 
 	protected void openCantieriWindow(JFrame frame) { // Funzione per accedere ai cantieri
 
+		try {
+			new CantiereWindows().showListaCantieriView(frame);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	protected void openOperaiWindow(JFrame frame, int idCant) { // Funzione per accedere agli operai
