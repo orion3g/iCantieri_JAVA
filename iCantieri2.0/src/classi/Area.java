@@ -72,4 +72,35 @@ public class Area {
 		return Listaree;
 	}
 
+	// Funzione che restituisce un oggetto cantiere contenuto in una tabella nel
+	// database e con l'id corrispondente all'id passato come parametro
+	
+	public List<Area> getAreePerCantiere(int idCant) throws IOException, SQLException {
+		List<Area> Listaree = new ArrayList<Area>();
+		Connection conn = new Database().getDefaultConnection();
+		PreparedStatement pstmt;
+		ResultSet rs;
+		Area area = new Area();
+		
+		String query = "SELECT * FROM CANTIERE WHERE IDCANTIERE=?"; // Query in SQL
+		if (conn != null) {
+			
+			pstmt = conn.prepareStatement(query);
+			pstmt.setInt(1, idCant);
+
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				area.setIdArea(rs.getInt(1));
+				area.setIdCant(rs.getString(2));
+				
+			
+			}
+			pstmt.close();
+		}
+		return Listaree;
+	}
+
+	
+
+	
 }

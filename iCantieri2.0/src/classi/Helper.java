@@ -67,6 +67,22 @@ public class Helper {
 		return result;
 	}
 
+	
+	// Funzione che converte una List<Area> in un Object[][] necessario per la
+		// costruzione di una JTable
+		public static Object[][] ConvertAreaListToObject(List<Area> list) {
+			Object[][] result = new Object[list.size()][4];
+			for (int i = 0; i < list.size(); i++) {
+				result[i][0] = list.get(i).getIdLav();
+				result[i][1] = list.get(i).getNome();
+				result[i][2] = list.get(i).getIdCant();
+
+		
+
+			}
+			return result;
+		}
+	
 	// Funzione che converte una data da un formato ad un altro
 	public static String convertDate(String parserString, String formatterString, String data) {
 		Date convertedDate = null;
