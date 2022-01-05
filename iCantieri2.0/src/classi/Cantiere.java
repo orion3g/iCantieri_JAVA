@@ -63,9 +63,7 @@ public class Cantiere {
 		return ListaCantieri;
 	}
 	
-	
 
-	
 	// Funzione che restituisce un oggetto cantiere contenuto in una tabella nel
 	// database e con l'id corrispondente all'id passato come parametro
 	public Cantiere getCantiere(int idCantiere) throws IOException, SQLException {

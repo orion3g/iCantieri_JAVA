@@ -199,7 +199,7 @@ public class OperaiWindows {
 		ListCantiere = cantiere.getAllCantieri();
 		
 		
-		idCantieriStrings = new String[cantiere.getAllCantieri().size()];
+		
 		for (int i = 0; i < idCantieriStrings.length; i++) {
 			int x = (ListCantiere.get(i).getIdCantiere());
 			String s = String.valueOf(x);
@@ -266,9 +266,9 @@ public class OperaiWindows {
 		table.setFont(tableFont);
 		table.setRowHeight(30);
 		table.getColumnModel().getColumn(0).setPreferredWidth(100);
-		table.getColumnModel().getColumn(1).setPreferredWidth(500);
-		table.getColumnModel().getColumn(2).setPreferredWidth(200);
-		table.getColumnModel().getColumn(3).setPreferredWidth(200);
+		table.getColumnModel().getColumn(1).setPreferredWidth(100);
+		table.getColumnModel().getColumn(2).setPreferredWidth(100);
+		table.getColumnModel().getColumn(3).setPreferredWidth(100);
 
 		JScrollPane scrollPanel = new JScrollPane(table);
 		scrollPanel.setPreferredSize(new Dimension(1500, 1000));

@@ -228,7 +228,7 @@ public class MainMenu {
 	public Component createAmministratoreComponents(JFrame frame) {
 		// funzione utilizzata per creare la pagina per l'amministratore
 
-		GridLayout layout = new GridLayout(4, 1); // Definisco un group layout
+		GridLayout layout = new GridLayout(5, 1); // Definisco un group layout
 		layout.setVgap(20);
 
 		JPanel bodyPanel = new JPanel(layout); // Panel da inviare alla funzione chiamante
@@ -236,6 +236,7 @@ public class MainMenu {
 		JButton ButtonCantieri = new JButton("CANTIERI");
 		JButton ButtonAree = new JButton("AREE");
 		JButton ButtonOperai = new JButton("OPERAI");
+		JButton ButtonDatiSensore = new JButton("DATI SENSORE");
 		JButton ButtonTornaAlLogin = new JButton("Torna al login");
 		
 		
@@ -247,13 +248,19 @@ public class MainMenu {
 
 		ButtonAree.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				openCantieriWindow(frame);
+				openAreaWindow(frame, 0);
 			}
 		});
 
 		ButtonOperai.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				openOperaiWindow(frame, 0);
+			}
+		});
+		
+		ButtonDatiSensore.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				openDatiSensoreWindow(frame, 0);
 			}
 		});
 		
@@ -266,6 +273,7 @@ public class MainMenu {
 		bodyPanel.add(ButtonCantieri); // Aggiungo i vari elementi al panel
 		bodyPanel.add(ButtonOperai);
 		bodyPanel.add(ButtonAree);
+		bodyPanel.add(ButtonDatiSensore);
 		bodyPanel.add(ButtonTornaAlLogin);
 
 		bodyPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
@@ -277,18 +285,19 @@ public class MainMenu {
 	public Component createCapocComponents(JFrame frame, int idCantiere) {
 		// funzione utilizzata per creare la pagina per il Capo cantiere
 
-		GridLayout layout = new GridLayout(3, 1); // Definisco un group layout
+		GridLayout layout = new GridLayout(4, 1); // Definisco un group layout
 		layout.setVgap(20);
 
 		JPanel bodyPanel = new JPanel(layout); // Panel da inviare alla funzione chiamante
 
 		JButton ButtonAree = new JButton("AREE");
 		JButton ButtonOperai = new JButton("OPERAI");
+		JButton ButtonDatiSensore = new JButton("DATI SENSORE");
 		JButton ButtonTornaAlLogin = new JButton("Torna al login");
 
 		ButtonAree.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				openAreaWindow(frame);
+				openAreaWindow(frame, idCantiere);
 			}
 		});
 
@@ -298,15 +307,24 @@ public class MainMenu {
 			}
 		});
 		
+		ButtonDatiSensore.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				openDatiSensoreWindow(frame, idCantiere);
+			}
+		});
+		
 		ButtonTornaAlLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				showLogin(frame);
 			}
 		});
+		
+		
 
 		// Aggiungo i vari elementi al panel
 		bodyPanel.add(ButtonOperai);
 		bodyPanel.add(ButtonAree);
+		bodyPanel.add(ButtonDatiSensore);
 		bodyPanel.add(ButtonTornaAlLogin);
 
 		bodyPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
@@ -348,8 +366,30 @@ public class MainMenu {
 
 	}
 
-	protected void openAreaWindow(JFrame frame) { // Funzione per accedere alle aree
-
+	protected void openAreaWindow(JFrame frame, int idCant) { // Funzione per accedere alle aree
+		try {
+			new AreaWindows().showListaAreeView(frame, idCant);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	protected void openDatiSensoreWindow(JFrame frame, int idCant) { // Funzione per accedere alle aree
+		try {
+			new DatiSensoreWindows().showListaAreeView(frame, idCant);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }

@@ -203,7 +203,7 @@ public class CantiereWindows {
 		List<Lavoratore> ListCapoCantiere = new ArrayList<Lavoratore>();
 		ListCapoCantiere = lavoratore.getAllCapoCantieri();
 
-		String[] columnNames = { "ID", "NOME", "COGNOME", "DATA NASCITA" }; // Lista degli header della tabella
+		String[] columnNames = { "ID", "NOME", "COGNOME", "DATA NASCITA", "IDCANTIERE" }; // Lista degli header della tabella
 		Object[][] data = Helper.ConvertOperaioListToObject(ListCapoCantiere); // Elementi della tabella
 
 		JTable table = new JTable(data, columnNames); // Creo la tabella riempendola con i dati
@@ -231,9 +231,10 @@ public class CantiereWindows {
 		table.setFont(tableFont);
 		table.setRowHeight(30);
 		table.getColumnModel().getColumn(0).setPreferredWidth(100);
-		table.getColumnModel().getColumn(1).setPreferredWidth(500);
-		table.getColumnModel().getColumn(2).setPreferredWidth(200);
-		table.getColumnModel().getColumn(3).setPreferredWidth(200);
+		table.getColumnModel().getColumn(1).setPreferredWidth(100);
+		table.getColumnModel().getColumn(2).setPreferredWidth(100);
+		table.getColumnModel().getColumn(3).setPreferredWidth(100);
+		table.getColumnModel().getColumn(4).setPreferredWidth(100);
 
 		JScrollPane scrollPanel = new JScrollPane(table);
 		scrollPanel.setPreferredSize(new Dimension(1500, 1000));
@@ -803,17 +804,17 @@ public class CantiereWindows {
 			salvaButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) { // Funzione di salvataggio sul click
 					String nome = nomeTF.getText(); // Leggo i valori nei campi
-					String cognome = descrizioneTF.getText();
+					String descrizione = descrizioneTF.getText();
 					Boolean result = false;
 
                     
 
-					if (nome.isEmpty() || cognome.isEmpty() ) { // Controllo che non ci siano campi
+					if (nome.isEmpty() || descrizione.isEmpty() ) { // Controllo che non ci siano campi
 																						// vuoti
 						setMessage("Tutti i campi devono essere compilati");
 					} else {
 						cantiere.setNome(nome);
-						cantiere.setDescrizione(cognome);
+						cantiere.setDescrizione(descrizione);
 						
 					
 								try {

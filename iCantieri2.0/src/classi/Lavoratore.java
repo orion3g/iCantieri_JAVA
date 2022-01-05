@@ -299,6 +299,27 @@ public class Lavoratore {
 			return false;
 		}
 
+	
+	// Funzione per eliminare un lavoratore
+	public boolean deleteLavoratore(int idLav) throws IOException, SQLException {
+		// TODO Auto-generated method stub
+				Connection conn = new Database().getDefaultConnection();
+				PreparedStatement pstmt;
+				String query;
+				if(conn != null) {
+					query = "DELETE FROM area WHERE idlav = ?";
+					pstmt = conn.prepareStatement(query);
+					pstmt.setInt(1, idLav);
+					
+					pstmt.close();	
+				}
+				else {
+					return false;
+				}
+				
+				return true;
+			}
+	
 
 
 }

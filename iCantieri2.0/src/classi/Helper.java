@@ -22,7 +22,7 @@ public class Helper {
 	// Funzione che converte una List<Lavoratore> in un Object[][] necessario per la
 	// costruzione di una JTable
 	public static Object[][] ConvertOperaioListToObject(List<Lavoratore> list) {
-		Object[][] result = new Object[list.size()][4];
+		Object[][] result = new Object[list.size()][5];
 		for (int i = 0; i < list.size(); i++) {
 			result[i][0] = list.get(i).getIdLav();
 			result[i][1] = list.get(i).getNome();
@@ -31,6 +31,7 @@ public class Helper {
 			String dataConvertita = convertDate(dateTimeFormatDb, dateFormatApp, list.get(i).getDataNascita());
 			// Converto la data nel formato adeguato
 			result[i][3] = dataConvertita;
+			result[i][4] = list.get(i).getIdCant();
 
 		}
 		return result;
@@ -55,7 +56,7 @@ public class Helper {
 		return result;
 	}
 
-	// Funzione che converte una List<Cantiere> in un Object[][] 
+	// Funzione che converte una List<Cantiere> in un Object[][]
 	public static Object[][] ConvertCantiereListToObject(List<Cantiere> list) {
 		Object[][] result = new Object[list.size()][3];
 		for (int i = 0; i < list.size(); i++) {
@@ -67,22 +68,60 @@ public class Helper {
 		return result;
 	}
 
+	// Funzione che converte una List<DatiSensore> in un Object[][] necessario per la
+	// costruzione di una JTable Amministratore
+	public static Object[][] ConvertDatiSensoreListToObject(List<DatiSensore> list) {
+		Object[][] result = new Object[list.size()][5];
+		for (int i = 0; i < list.size(); i++) {
+			result[i][0] = list.get(i).getIdSens();
+			result[i][1] = list.get(i).getDatoRumore();
+			result[i][2] = list.get(i).getDatoGas();
+			result[i][3] = list.get(i).getAllarme();
+			
+			String dataConvertita = convertDate(dateTimeFormatDb, dateFormatApp, list.get(i).getDataGiorno());
+			// Converto la data nel formato adeguato
+			result[i][4] = dataConvertita;
+
+		}
+		return result;
+	}
 	
 	// Funzione che converte una List<Area> in un Object[][] necessario per la
-		// costruzione di una JTable
-		public static Object[][] ConvertAreaListToObject(List<Area> list) {
-			Object[][] result = new Object[list.size()][4];
-			for (int i = 0; i < list.size(); i++) {
-				result[i][0] = list.get(i).getIdLav();
-				result[i][1] = list.get(i).getNome();
-				result[i][2] = list.get(i).getIdCant();
+	// costruzione di una JTable Amministratore
+	public static Object[][] ConvertAreaListToObject(List<Area> list) {
+		Object[][] result = new Object[list.size()][4];
+		for (int i = 0; i < list.size(); i++) {
+			result[i][0] = list.get(i).getIdArea();
+			result[i][1] = list.get(i).getNome();
+			result[i][2] = list.get(i).getIdCant();
 
-		
-
-			}
-			return result;
 		}
-	
+		return result;
+	}
+
+	// Funzione che converte una List<Sensore> in un Object[][] necessario per la
+	// costruzione di una JTable Amministratore
+	public static Object[][] ConvertSensoreListToObject(List<Area> list) {
+		Object[][] result = new Object[list.size()][1];
+		for (int i = 0; i < list.size(); i++) {
+			result[i][0] = list.get(i).getIdArea();
+
+		}
+		return result;
+	}
+
+	// Funzione che converte una List<Area> in un Object[][] necessario per la
+	// costruzione di una JTable
+	public static Object[][] ConvertAreaListToObjectCapoC(List<Area> list) {
+		Object[][] result = new Object[list.size()][4];
+		for (int i = 0; i < list.size(); i++) {
+			result[i][0] = list.get(i).getIdArea();
+			result[i][1] = list.get(i).getNome();
+
+		}
+		return result;
+	}
+
 	// Funzione che converte una data da un formato ad un altro
 	public static String convertDate(String parserString, String formatterString, String data) {
 		Date convertedDate = null;
@@ -189,6 +228,25 @@ public class Helper {
 					new Object[] { operai.get(i).getIdLav(), operai.get(i).getNome(), operai.get(i).getCognome(), Helper
 							.convertDate(Helper.dateTimeFormatDb, Helper.dateFormatApp, operai.get(i).getDataNascita()),
 							operai.get(i).getIdCant() });
+
+		}
+		return model;
+	}
+
+	// Funziona utilizzata per riempire tabella in base alla lista degli operai
+	// passata
+
+	public static DefaultTableModel addElementsTableDatiSensore(List<DatiSensore> DatiSensore,
+			DefaultTableModel model) {
+		model.setRowCount(0); // mi resetto tutte le righe della tabella
+		
+		for (int i = 0; i < DatiSensore.size(); i++) {
+
+			model.insertRow(model.getRowCount(),
+					new Object[] {  DatiSensore.get(i).getIdSens(), DatiSensore.get(i).getDatoRumore(), DatiSensore.get(i).getDatoGas(),
+							DatiSensore.get(i).getAllarme(), Helper.convertDate(Helper.dateTimeFormatDb, Helper.dateFormatApp,
+									DatiSensore.get(i).getDataGiorno())
+							 });
 
 		}
 		return model;
