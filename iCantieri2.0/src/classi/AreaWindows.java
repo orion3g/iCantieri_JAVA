@@ -305,7 +305,6 @@ public class AreaWindows {
 		Font headerFont = new Font("SansSerif", Font.BOLD, 20);
 		Font labelFont = new Font("SansSerif", Font.BOLD, 18);
 		Font normalFont = new Font("SansSerif", Font.PLAIN, 18);
-		Font tableFont = new Font("Arial", Font.PLAIN, 18);
 
 		JLabel pageLabel = new JLabel("Crea AREA "); // Titolo
 		pageLabel.setFont(headerFont);
@@ -345,6 +344,20 @@ public class AreaWindows {
 		dataNascitaOperatoreMeseLabel.setFont(labelFont);
 		JLabel dataNascitaOperatoreAnnoLabel = new JLabel("Anno(yyyy)");
 		dataNascitaOperatoreAnnoLabel.setFont(labelFont);
+
+		JLabel pageLabelSoglie = new JLabel("IMPOSTA SOGLIE "); // Titolo
+		pageLabelSoglie.setFont(headerFont);
+
+		JLabel sogliaRumoreLabel = new JLabel("SOGLIA RUMORE");
+		sogliaRumoreLabel.setFont(labelFont);
+
+		JLabel sogliaGasLabel = new JLabel("SOGLIA GAS");
+		sogliaGasLabel.setFont(labelFont);
+
+		JTextField sogliaRumoreTF = new JTextField();
+		sogliaRumoreTF.setFont(normalFont);
+		JTextField sogliaGasTF = new JTextField();
+		sogliaGasTF.setFont(normalFont);
 
 		JTextField nomeAreaTF = new JTextField(); // Campi da compilare
 		nomeAreaTF.setFont(normalFont);
@@ -386,6 +399,9 @@ public class AreaWindows {
 		dataNascitaOperatoreMeseLabel.setLabelFor(dataNascitaOperatoreMeseTF);
 		dataNascitaOperatoreAnnoLabel.setLabelFor(dataNascitaOperatoreAnnoTF);
 
+		sogliaRumoreLabel.setLabelFor(sogliaRumoreTF);
+		sogliaGasLabel.setLabelFor(sogliaGasTF);
+
 		JButton salvaButton = new JButton("Salva"); // Bottone per salvare la nuova area
 		salvaButton.setPreferredSize(new Dimension(100, 50));
 		salvaButton.setBackground(Color.GREEN);
@@ -408,6 +424,9 @@ public class AreaWindows {
 				String dataNascitaOperatore = dataNascitaOperatoreGiorno + "/" + dataNascitaOperatoreMese + "/"
 						+ dataNascitaOperatoreAnno;
 
+				String r1 = sogliaRumoreTF.getText();
+				String g1 = sogliaGasTF.getText();
+
 				Boolean result = false;
 
 				Lavoratore responsabile = new Lavoratore();
@@ -416,15 +435,33 @@ public class AreaWindows {
 				String nomeArea = nomeAreaTF.getText();
 				Area area = new Area();
 
-				if (nome.isEmpty() || cognome.isEmpty() || dataNascita.isEmpty()) { // Controllo che non ci siano campi
-																					// vuoti
+				if (nomeArea.isEmpty() || nome.isEmpty() || cognome.isEmpty() || dataNascitaGiorno.isEmpty()
+						|| dataNascitaMese.isEmpty() || dataNascitaAnno.isEmpty() || nomeOperatore.isEmpty()
+						|| cognomeOperatore.isEmpty() || dataNascitaOperatoreGiorno.isEmpty()
+						|| dataNascitaOperatoreMese.isEmpty() || dataNascitaOperatoreAnno.isEmpty()
+						|| r1.isEmpty() || g1.isEmpty()) { // Controllo
+					// che
+					// non
+					// ci
+					// siano
+					// campi
+					// vuoti
 					setMessage("Tutti i campi devono essere compilati");
 				} else {
-					if (Helper.isDate(dataNascita, Helper.dateFormatApp))
-						if (Helper.isMaggiorenne(dataNascita)) // Controllo che i valori nei campi non
+					if (Helper.isDate(dataNascita, Helper.dateFormatApp)
+							&& (Helper.isDate(dataNascitaOperatore, Helper.dateFormatApp)))
+						if (Helper.isMaggiorenne(dataNascita) && Helper.isMaggiorenne(dataNascitaOperatore)) // Controllo
+																												// che i
+																												// valori
+																												// nei
+																												// campi
+																												// non
 						// stringa siano validi
 
 						{
+							
+							Float rumore = Float.parseFloat(sogliaRumoreTF.getText()); // Leggo i valori nei campi
+							Float gas = Float.parseFloat(sogliaGasTF.getText());
 							String dataNascitaConvertita = Helper.convertDate(Helper.dateFormatApp,
 									Helper.dateTimeFormatDb, dataNascita);
 							// Funzione che consente di convertire una data
@@ -440,6 +477,8 @@ public class AreaWindows {
 							operatore.setNome(nomeOperatore);
 							operatore.setCognome(cognomeOperatore);
 							operatore.setDataNascita(dataNascitaOperatoreConvertita);
+							area.setSogliaGas(gas);
+							area.setSogliaRumore(rumore);
 
 							try {
 
@@ -451,7 +490,7 @@ public class AreaWindows {
 							}
 
 						} else {
-							setMessage("L'operaio deve essere maggiorenne");
+							setMessage("I lavoratori devono essere maggiorenni");
 							// i campi non sono stati compilati correttamente
 						}
 
@@ -512,10 +551,11 @@ public class AreaWindows {
 		layout.setHorizontalGroup(layout.createSequentialGroup() // Definisco l'horizontalGroup
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(pageLabel)
 						.addComponent(pageLabelResponsabile).addComponent(pageLabelOperatore)
+						.addComponent(pageLabelSoglie)
 						.addGroup(layout.createSequentialGroup()
 								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-										.addComponent(nomeAreaLabel).addComponent(pageLabelResponsabile)
-										.addComponent(nomeResponsabileLabel).addComponent(cognomeResponsabileLabel)
+										.addComponent(nomeAreaLabel).addComponent(nomeResponsabileLabel).addComponent(
+												cognomeResponsabileLabel)
 										.addComponent(dataNascitaResponsabileLabel))
 
 								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
@@ -536,8 +576,8 @@ public class AreaWindows {
 
 						.addGroup(layout.createSequentialGroup()
 								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-										.addComponent(pageLabelOperatore).addComponent(nomeOperatoreLabel)
-										.addComponent(cognomeOperatoreLabel).addComponent(dataNascitaOperatoreLabel))
+										.addComponent(nomeOperatoreLabel).addComponent(cognomeOperatoreLabel)
+										.addComponent(dataNascitaOperatoreLabel))
 
 								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 										.addComponent(nomeOperatoreTF).addComponent(cognomeOperatoreTF)
@@ -554,6 +594,13 @@ public class AreaWindows {
 														.addComponent(dataNascitaOperatoreAnnoLabel))
 												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 														.addComponent(dataNascitaOperatoreAnnoTF)))))
+
+						.addGroup(layout.createSequentialGroup()
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+										.addComponent(sogliaRumoreLabel).addComponent(sogliaGasLabel))
+
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+										.addComponent(sogliaRumoreTF).addComponent(sogliaGasTF)))
 
 						.addGroup(layout.createSequentialGroup()
 								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -586,6 +633,13 @@ public class AreaWindows {
 						.addComponent(dataNascitaOperatoreGiornoTF).addComponent(dataNascitaOperatoreMeseLabel)
 						.addComponent(dataNascitaOperatoreMeseTF).addComponent(dataNascitaOperatoreAnnoLabel)
 						.addComponent(dataNascitaOperatoreAnnoTF))
+
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(pageLabelSoglie))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(sogliaRumoreLabel)
+						.addComponent(sogliaRumoreTF))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(sogliaGasLabel)
+						.addComponent(sogliaGasTF))
+
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE))
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE))
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(salvaButton)
@@ -642,6 +696,15 @@ public class AreaWindows {
 		JLabel dataNascitaOperatoreAnnoLabel = new JLabel("Anno(yyyy)");
 		dataNascitaOperatoreAnnoLabel.setFont(labelFont);
 
+		JLabel pageLabelSoglie = new JLabel("IMPOSTA SOGLIE "); // Titolo
+		pageLabelSoglie.setFont(headerFont);
+
+		JLabel sogliaRumoreLabel = new JLabel("SOGLIA RUMORE");
+		sogliaRumoreLabel.setFont(labelFont);
+
+		JLabel sogliaGasLabel = new JLabel("SOGLIA GAS");
+		sogliaGasLabel.setFont(labelFont);
+
 		JLabel cantieriLabel = new JLabel("SELEZIONARE IL CANTIERE:");
 		cantieriLabel.setFont(headerFont);
 
@@ -695,6 +758,11 @@ public class AreaWindows {
 		JTextField dataNascitaOperatoreAnnoTF = new JTextField();
 		dataNascitaOperatoreAnnoTF.setFont(normalFont);
 
+		JTextField sogliaRumoreTF = new JTextField();
+		sogliaRumoreTF.setFont(normalFont);
+		JTextField sogliaGasTF = new JTextField();
+		sogliaGasTF.setFont(normalFont);
+
 		nomeAreaLabel.setLabelFor(nomeAreaTF);
 		nomeResponsabileLabel.setLabelFor(nomeTF); // Associo le label ai vari campi
 		cognomeResponsabileLabel.setLabelFor(cognomeTF);
@@ -708,6 +776,9 @@ public class AreaWindows {
 		dataNascitaOperatoreGiornoLabel.setLabelFor(dataNascitaOperatoreGiornoTF);
 		dataNascitaOperatoreMeseLabel.setLabelFor(dataNascitaOperatoreMeseTF);
 		dataNascitaOperatoreAnnoLabel.setLabelFor(dataNascitaOperatoreAnnoTF);
+
+		sogliaRumoreLabel.setLabelFor(sogliaRumoreTF);
+		sogliaGasLabel.setLabelFor(sogliaGasTF);
 
 		JButton salvaButton = new JButton("Salva"); // Bottone per salvare il nuovo operaio
 		salvaButton.setPreferredSize(new Dimension(100, 50));
@@ -732,6 +803,11 @@ public class AreaWindows {
 
 				String nomeArea = nomeAreaTF.getText();
 
+				String r1 = sogliaRumoreTF.getText();
+				String g1 = sogliaGasTF.getText();
+
+				
+
 				Boolean result = false;
 
 				Lavoratore responsabile = new Lavoratore();
@@ -739,15 +815,32 @@ public class AreaWindows {
 
 				Area area = new Area();
 
-				if (nome.isEmpty() || cognome.isEmpty() || dataNascita.isEmpty()) { // Controllo che non ci siano campi
-																					// vuoti
+				if (nomeArea.isEmpty() || nome.isEmpty() || cognome.isEmpty() || dataNascitaGiorno.isEmpty()
+						|| dataNascitaMese.isEmpty() || dataNascitaAnno.isEmpty() || nomeOperatore.isEmpty()
+						|| cognomeOperatore.isEmpty() || dataNascitaOperatoreGiorno.isEmpty()
+						|| dataNascitaOperatoreMese.isEmpty() || dataNascitaOperatoreAnno.isEmpty()
+						|| r1.isEmpty() || g1.isEmpty()) { // Controllo
+					// che
+					// non
+					// ci
+					// siano
+					// campi
+					// vuoti
 					setMessage("Tutti i campi devono essere compilati");
 				} else {
-					if (Helper.isDate(dataNascita, Helper.dateFormatApp))
-						if (Helper.isMaggiorenne(dataNascita)) // Controllo che i valori nei campi non
+					if (Helper.isDate(dataNascita, Helper.dateFormatApp)
+							&& (Helper.isDate(dataNascitaOperatore, Helper.dateFormatApp)))
+						if (Helper.isMaggiorenne(dataNascita) && Helper.isMaggiorenne(dataNascitaOperatore)) // Controllo
+																												// che i
+																												// valori
+																												// nei
+																												// campi
+																												// non
 						// stringa siano validi
 
 						{
+							Float rumore = Float.parseFloat(sogliaRumoreTF.getText()); // Leggo i valori nei campi
+							Float gas = Float.parseFloat(sogliaGasTF.getText());
 							String dataNascitaConvertita = Helper.convertDate(Helper.dateFormatApp,
 									Helper.dateTimeFormatDb, dataNascita);
 							// Funzione che consente di convertire una data
@@ -763,6 +856,9 @@ public class AreaWindows {
 							operatore.setNome(nomeOperatore);
 							operatore.setCognome(cognomeOperatore);
 							operatore.setDataNascita(dataNascitaOperatoreConvertita);
+
+							area.setSogliaGas(gas);
+							area.setSogliaRumore(rumore);
 
 							try {
 
@@ -835,9 +931,11 @@ public class AreaWindows {
 		layout.setHorizontalGroup(layout.createSequentialGroup() // Definisco l'horizontalGroup
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(pageLabel)
 						.addComponent(pageLabelResponsabile).addComponent(pageLabelOperatore)
+						.addComponent(pageLabelSoglie)
 						.addGroup(layout.createSequentialGroup()
 								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-										.addComponent(nomeAreaLabel).addComponent(pageLabelResponsabile)
+										.addComponent(nomeAreaLabel)
+
 										.addComponent(nomeResponsabileLabel).addComponent(cognomeResponsabileLabel)
 										.addComponent(dataNascitaResponsabileLabel))
 
@@ -859,8 +957,9 @@ public class AreaWindows {
 
 						.addGroup(layout.createSequentialGroup()
 								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-										.addComponent(pageLabelOperatore).addComponent(nomeOperatoreLabel)
-										.addComponent(cognomeOperatoreLabel).addComponent(dataNascitaOperatoreLabel))
+
+										.addComponent(nomeOperatoreLabel).addComponent(cognomeOperatoreLabel)
+										.addComponent(dataNascitaOperatoreLabel))
 
 								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 										.addComponent(nomeOperatoreTF).addComponent(cognomeOperatoreTF)
@@ -877,6 +976,13 @@ public class AreaWindows {
 														.addComponent(dataNascitaOperatoreAnnoLabel))
 												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 														.addComponent(dataNascitaOperatoreAnnoTF)))))
+
+						.addGroup(layout.createSequentialGroup()
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+										.addComponent(sogliaRumoreLabel).addComponent(sogliaGasLabel))
+
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+										.addComponent(sogliaRumoreTF).addComponent(sogliaGasTF)))
 
 						.addGroup(layout.createSequentialGroup().addGroup(
 								layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(cantieriLabel)))
@@ -916,6 +1022,12 @@ public class AreaWindows {
 						.addComponent(dataNascitaOperatoreGiornoTF).addComponent(dataNascitaOperatoreMeseLabel)
 						.addComponent(dataNascitaOperatoreMeseTF).addComponent(dataNascitaOperatoreAnnoLabel)
 						.addComponent(dataNascitaOperatoreAnnoTF))
+
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(pageLabelSoglie))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(sogliaRumoreLabel)
+						.addComponent(sogliaRumoreTF))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(sogliaGasLabel)
+						.addComponent(sogliaGasTF))
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(cantieriLabel))
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(table))
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(salvaButton)
@@ -933,8 +1045,8 @@ public class AreaWindows {
 		Lavoratore responsabile = new Lavoratore();
 		responsabile = responsabile.getLavoratore(area.getIdLav());
 
-		sensore=sensore.getSensore(idArea);
-		
+		sensore = sensore.getSensore(idArea);
+
 		Lavoratore operatore = new Lavoratore();
 		operatore = operatore.getLavoratore(sensore.getIdLav());
 
@@ -965,7 +1077,7 @@ public class AreaWindows {
 		JLabel nomeAreaLabel = new JLabel("NOME AREA:"); // Label dei vari campi da modificare
 		nomeAreaLabel.setFont(labelFont);
 
-		JLabel pageLabelResponsabile = new JLabel("RESPONSABILE"); // Titolo
+		JLabel pageLabelResponsabile = new JLabel("MODIFICA RESPONSABILE"); // Titolo
 		pageLabelResponsabile.setFont(headerFont);
 
 		JLabel nomeResponsabileLabel = new JLabel("NOME:"); // Label dei vari campi da modificare
@@ -982,7 +1094,7 @@ public class AreaWindows {
 		JLabel dataNascitaResponsabileAnnoLabel = new JLabel("Anno(yyyy):");
 		dataNascitaResponsabileAnnoLabel.setFont(labelFont);
 
-		JLabel pageLabelOperatore = new JLabel("OPERATORE SENSORI"); // Titolo
+		JLabel pageLabelOperatore = new JLabel("MODIFICA OPERATORE SENSORI"); // Titolo
 		pageLabelOperatore.setFont(headerFont);
 
 		JLabel nomeOperatoreLabel = new JLabel("NOME"); // Label dei vari campi da modificare
@@ -997,6 +1109,15 @@ public class AreaWindows {
 		dataNascitaOperatoreMeseLabel.setFont(labelFont);
 		JLabel dataNascitaOperatoreAnnoLabel = new JLabel("Anno(yyyy)");
 		dataNascitaOperatoreAnnoLabel.setFont(labelFont);
+
+		JLabel pageLabelSoglie = new JLabel("MODIFICA SOGLIE"); // Titolo
+		pageLabelSoglie.setFont(headerFont);
+
+		JLabel sogliaRumoreLabel = new JLabel("SOGLIA RUMORE");
+		sogliaRumoreLabel.setFont(labelFont);
+
+		JLabel sogliaGasLabel = new JLabel("SOGLIA GAS");
+		sogliaGasLabel.setFont(labelFont);
 
 		JTextField nomeAreaTF = new JTextField(oldArea.getNome()); // Campi da modificare
 		nomeAreaTF.setFont(normalFont);
@@ -1042,6 +1163,17 @@ public class AreaWindows {
 		JTextField dataNascitaOperatoreAnnoTF = new JTextField(dataNascitaOperatoreConvertita.substring(6, 10));
 		dataNascitaAnnoTF.setFont(normalFont);
 
+		float rumore = oldArea.getSogliaRumore();
+		String s = Float.toString(rumore);
+
+		float gas = oldArea.getSogliaGas();
+		String s1 = Float.toString(gas);
+
+		JTextField sogliaRumoreTF = new JTextField(s);
+		sogliaRumoreTF.setFont(normalFont);
+		JTextField sogliaGasTF = new JTextField(s1);
+		sogliaGasTF.setFont(normalFont);
+
 		nomeAreaLabel.setLabelFor(nomeAreaTF); // Associo le label ai vari campi
 		nomeResponsabileLabel.setLabelFor(nomeResposabileTF);
 		cognomeResponsabileLabel.setLabelFor(cognomeResponsabileTF);
@@ -1080,12 +1212,18 @@ public class AreaWindows {
 						+ dataNascitaOperatoreAnno;
 				Boolean result = false;
 
+				Float rumore = Float.parseFloat(sogliaRumoreTF.getText()); // Leggo i valori nei campi
+				Float gas = Float.parseFloat(sogliaGasTF.getText());
+
 				Lavoratore responsabile = new Lavoratore();
 				Lavoratore operatore = new Lavoratore();
 				Area area = new Area();
 
 				if (nomeArea.isEmpty() || nome.isEmpty() || cognome.isEmpty() || dataNGiorno.isEmpty()
-						|| dataNMese.isEmpty() || dataNAnno.isEmpty()) {
+						|| dataNMese.isEmpty() || dataNAnno.isEmpty() || nomeOperatore.isEmpty()
+						|| cognomeOperatore.isEmpty() || dataNascitaOperatoreGiorno.isEmpty()
+						|| dataNascitaOperatoreMese.isEmpty() || dataNascitaOperatoreAnno.isEmpty() || rumore == null
+						|| gas == null) {
 					// Controllo che non ci siano campi vuoti
 					setMessage("Tutti i campi devono essere compilati");
 				} else {
@@ -1103,6 +1241,8 @@ public class AreaWindows {
 
 							area.setIdArea(oldArea.getIdArea());
 							area.setNome(nomeArea);
+							area.setSogliaGas(gas);
+							area.setSogliaRumore(rumore);
 
 							responsabile.setIdLav(oldResponsabile.getIdLav());
 							responsabile.setNome(nome);
@@ -1133,7 +1273,7 @@ public class AreaWindows {
 				}
 
 				if (result) { // Se il salvataggio dell'area avviene con successo
-					Helper.showSuccessMessage(frame, "Operaio salvato correttamente");
+					Helper.showSuccessMessage(frame, "Area salvata correttamente");
 					try {
 						showListaAreeView(frame, idCant); // Torna alla lista delle aree
 					} catch (IOException | SQLException e) {
@@ -1162,7 +1302,8 @@ public class AreaWindows {
 				if (risposta == 0) {
 					Boolean result = false;
 					try {
-						result = area.deleteArea(oldArea.getIdArea(), oldResponsabile.getIdLav());
+						result = area.deleteArea(oldArea.getIdArea(), oldResponsabile.getIdLav(),
+								oldOperatore.getIdLav());
 					} catch (IOException | SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -1217,61 +1358,88 @@ public class AreaWindows {
 		layout.setAutoCreateContainerGaps(true);
 
 		layout.setHorizontalGroup(layout.createSequentialGroup() // Definisco l'horizontalGroup
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(pageLabel)
-						.addComponent(pageLabelResponsabile).addComponent(pageLabelOperatore)
-						.addGroup(layout.createSequentialGroup()
-								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-										.addComponent(nomeAreaLabel).addComponent(pageLabelResponsabile)
-										.addComponent(nomeResponsabileLabel).addComponent(cognomeResponsabileLabel)
+				.addGroup(
+						layout.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(pageLabel)
+								.addComponent(pageLabelResponsabile)
+
+								.addComponent(pageLabelOperatore).addComponent(pageLabelSoglie)
+								.addGroup(layout.createSequentialGroup().addGroup(layout
+										.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(nomeAreaLabel)
+
+										.addComponent(
+												nomeResponsabileLabel)
+										.addComponent(cognomeResponsabileLabel)
 										.addComponent(dataNascitaResponsabileLabel))
 
-								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-										.addComponent(nomeAreaTF).addComponent(nomeResposabileTF)
-										.addComponent(cognomeResponsabileTF)
-										.addGroup(layout.createSequentialGroup()
-												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-														.addComponent(dataNascitaResponsabileGiornoLabel))
-												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-														.addComponent(dataNascitaGiornoTF))
-												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-														.addComponent(dataNascitaResponsabileMeseLabel))
-												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-														.addComponent(dataNascitaMeseTF))
-												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-														.addComponent(dataNascitaResponsabileAnnoLabel))
-												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-														.addComponent(dataNascitaAnnoTF)))))
+										.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+												.addComponent(nomeAreaTF).addComponent(nomeResposabileTF)
+												.addComponent(cognomeResponsabileTF)
+												.addGroup(layout.createSequentialGroup()
+														.addGroup(layout
+																.createParallelGroup(GroupLayout.Alignment.LEADING)
+																.addComponent(dataNascitaResponsabileGiornoLabel))
+														.addGroup(layout
+																.createParallelGroup(GroupLayout.Alignment.LEADING)
+																.addComponent(dataNascitaGiornoTF))
+														.addGroup(layout
+																.createParallelGroup(GroupLayout.Alignment.LEADING)
+																.addComponent(dataNascitaResponsabileMeseLabel))
+														.addGroup(layout
+																.createParallelGroup(GroupLayout.Alignment.LEADING)
+																.addComponent(dataNascitaMeseTF))
+														.addGroup(layout
+																.createParallelGroup(GroupLayout.Alignment.LEADING)
+																.addComponent(dataNascitaResponsabileAnnoLabel))
+														.addGroup(layout
+																.createParallelGroup(GroupLayout.Alignment.LEADING)
+																.addComponent(dataNascitaAnnoTF)))))
 
-						.addGroup(layout.createSequentialGroup()
-								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-										.addComponent(pageLabelOperatore).addComponent(nomeOperatoreLabel)
-										.addComponent(cognomeOperatoreLabel).addComponent(dataNascitaOperatoreLabel))
+								.addGroup(layout.createSequentialGroup()
+										.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 
-								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-										.addComponent(nomeOperatoreTF).addComponent(cognomeOperatoreTF)
-										.addGroup(layout.createSequentialGroup()
-												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-														.addComponent(dataNascitaOperatoreGiornoLabel))
-												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-														.addComponent(dataNascitaOperatoreGiornoTF))
-												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-														.addComponent(dataNascitaOperatoreMeseLabel))
-												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-														.addComponent(dataNascitaOperatoreMeseTF))
-												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-														.addComponent(dataNascitaOperatoreAnnoLabel))
-												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-														.addComponent(dataNascitaOperatoreAnnoTF)))))
+												.addComponent(
+														nomeOperatoreLabel)
+												.addComponent(cognomeOperatoreLabel)
+												.addComponent(dataNascitaOperatoreLabel))
 
-						.addGroup(layout.createSequentialGroup()
-								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-										.addComponent(salvaButton))
-								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-										.addComponent(tornaAllaListaButton))
-								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-										.addComponent(eliminaButton))
+										.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+												.addComponent(nomeOperatoreTF).addComponent(cognomeOperatoreTF)
+												.addGroup(layout.createSequentialGroup()
+														.addGroup(layout
+																.createParallelGroup(GroupLayout.Alignment.LEADING)
+																.addComponent(dataNascitaOperatoreGiornoLabel))
+														.addGroup(layout
+																.createParallelGroup(GroupLayout.Alignment.LEADING)
+																.addComponent(dataNascitaOperatoreGiornoTF))
+														.addGroup(layout
+																.createParallelGroup(GroupLayout.Alignment.LEADING)
+																.addComponent(dataNascitaOperatoreMeseLabel))
+														.addGroup(layout
+																.createParallelGroup(GroupLayout.Alignment.LEADING)
+																.addComponent(dataNascitaOperatoreMeseTF))
+														.addGroup(layout
+																.createParallelGroup(GroupLayout.Alignment.LEADING)
+																.addComponent(dataNascitaOperatoreAnnoLabel))
+														.addGroup(layout
+																.createParallelGroup(GroupLayout.Alignment.LEADING)
+																.addComponent(dataNascitaOperatoreAnnoTF)))))
 
-						)));
+								.addGroup(layout.createSequentialGroup()
+										.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+												.addComponent(sogliaRumoreLabel).addComponent(sogliaGasLabel))
+
+										.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+												.addComponent(sogliaRumoreTF).addComponent(sogliaGasTF)))
+
+								.addGroup(layout.createSequentialGroup()
+										.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+												.addComponent(salvaButton))
+										.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+												.addComponent(tornaAllaListaButton))
+										.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+												.addComponent(eliminaButton)))
+
+				));
 
 		layout.setVerticalGroup(layout.createSequentialGroup() // Definisco il verticalGroup
 				.addComponent(pageLabel)
@@ -1298,10 +1466,19 @@ public class AreaWindows {
 						.addComponent(dataNascitaOperatoreGiornoTF).addComponent(dataNascitaOperatoreMeseLabel)
 						.addComponent(dataNascitaOperatoreMeseTF).addComponent(dataNascitaOperatoreAnnoLabel)
 						.addComponent(dataNascitaOperatoreAnnoTF))
+
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(pageLabelSoglie))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(sogliaRumoreLabel)
+						.addComponent(sogliaRumoreTF))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(sogliaGasLabel)
+						.addComponent(sogliaGasTF))
+
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE))
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE))
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(salvaButton)
-						.addComponent(tornaAllaListaButton).addComponent(eliminaButton)));
+						.addComponent(tornaAllaListaButton).addComponent(eliminaButton))
+
+		);
 
 		return panelContainer;
 	}

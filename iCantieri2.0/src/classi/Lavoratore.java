@@ -138,6 +138,35 @@ public class Lavoratore {
 		return operai;
 	}
 
+	// Funzione che restituisce un lavoratore per cantiere
+	public Lavoratore getCapocPerCant(int idCant) throws IOException, SQLException {
+		Lavoratore lavoratore = new  Lavoratore();
+		Connection conn = new Database().getDefaultConnection();
+		PreparedStatement pstmt;
+		ResultSet rs;
+
+		String query = "SELECT * FROM LAVORATORE WHERE IDCANT=? AND TIPOLAV='CAPOC'"; // Query in SQL
+		if (conn != null) {
+			pstmt = conn.prepareStatement(query);
+			pstmt.setInt(1, idCant);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+		
+				lavoratore.setIdLav(rs.getInt(1));
+				lavoratore.setNome(rs.getString(2));
+				lavoratore.setCognome(rs.getString(3));
+				lavoratore.setDataNascita(rs.getString(4));
+				lavoratore.setTipoLav(rs.getString(5));
+				lavoratore.setIdCant(rs.getInt(6));
+
+				
+			}
+			pstmt.close();
+		}
+		return lavoratore;
+	}
+	
+	
 	// Funzione che restituisce tutti gli operai
 
 	public List<Lavoratore> getAllOperai() throws IOException, SQLException {
@@ -307,10 +336,10 @@ public class Lavoratore {
 				PreparedStatement pstmt;
 				String query;
 				if(conn != null) {
-					query = "DELETE FROM area WHERE idlav = ?";
+					query = "DELETE FROM lavoratore WHERE idlav = ?";
 					pstmt = conn.prepareStatement(query);
 					pstmt.setInt(1, idLav);
-					
+					pstmt.executeUpdate();
 					pstmt.close();	
 				}
 				else {

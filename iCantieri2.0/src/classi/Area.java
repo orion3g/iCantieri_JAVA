@@ -1,4 +1,4 @@
-package classi;
+ package classi;
 
 import java.io.IOException;
 import java.sql.CallableStatement;
@@ -17,6 +17,8 @@ public class Area {
 	private String Nome;
 	private int idLav;
 	private int idCant;
+	private float sogliaRumore;
+	private float sogliaGas;
 
 	public int getIdArea() {
 		return idArea;
@@ -50,6 +52,20 @@ public class Area {
 		this.idCant = idCant;
 	}
 
+	public float getSogliaRumore() {
+		return sogliaRumore;
+	}
+	public void setSogliaRumore(float sogliaRumore) {
+		this.sogliaRumore = sogliaRumore;
+	}
+	
+	public float getSogliaGas() {
+		return sogliaGas;
+	}
+	public void setSogliaGas(float sogliaGas) {
+		this.sogliaGas = sogliaGas;
+	}
+	
 //Funzione che mi restituisce tutte le aree nel DB  
 
 	public List<Area> getAllAree() throws IOException, SQLException {
@@ -113,13 +129,11 @@ public class Area {
 		// TODO Auto-generated method stub
 		Connection conn = new Database().getDefaultConnection();
 		CallableStatement cstmt = null;
-		PreparedStatement pstmt = null;
 		int rows = 0;
-		String query;
-		String query1;
+
 		if (conn != null) {
 			if (area.getIdArea() == 0) { // Se l'area non esiste
-				cstmt = conn.prepareCall("{call INSERTAREA(?,?,?,?,?,?,?,?)}");
+				cstmt = conn.prepareCall("{call INSERTAREA(?,?,?,?,?,?,?,?,?,?)}");
 				cstmt.setString(1, operatore.getNome());
 				cstmt.setString(2, operatore.getCognome());
 
@@ -131,11 +145,14 @@ public class Area {
 				cstmt.setTimestamp(6, java.sql.Timestamp.valueOf(responsabile.getDataNascita()));
 				cstmt.setInt(7, responsabile.getIdCant());
 				cstmt.setString(8, area.getNome());
+				cstmt.setFloat(9, area.getSogliaRumore());
+				cstmt.setFloat(10, area.getSogliaGas());
+				
 
 				rows = cstmt.executeUpdate();
 			} else { // Se l'area esiste
 
-				cstmt = conn.prepareCall("{call UPDATEAREA(?,?,?,?,?,?,?,?,?,?)}");
+				cstmt = conn.prepareCall("{call UPDATEAREA(?,?,?,?,?,?,?,?,?,?,?,?)}");
 
 				cstmt.setString(1, operatore.getNome());
 				cstmt.setString(2, operatore.getCognome());
@@ -148,6 +165,9 @@ public class Area {
 				cstmt.setInt(8, responsabile.getIdLav());
 				cstmt.setInt(9, area.getIdArea());
 				cstmt.setString(10, area.getNome());
+				cstmt.setFloat(11, area.getSogliaRumore());
+				cstmt.setFloat(12, area.getSogliaGas());
+				
 
 				rows = cstmt.executeUpdate();
 			}
@@ -181,6 +201,8 @@ public class Area {
 				area.setNome(rs.getString(2));
 				area.setIdLav(rs.getInt(3));
 				area.setIdCant(rs.getInt(4));
+				area.setSogliaRumore(rs.getFloat(5));
+				area.setSogliaGas(rs.getFloat(6));
 			}
 			pstmt.close();
 		}
@@ -188,17 +210,17 @@ public class Area {
 	}
 
 	// Funzione per eliminare un'area
-	public boolean deleteArea(int idArea, int idLav) throws IOException, SQLException {
+	public boolean deleteArea(int idArea, int idLav, int idLavOp) throws IOException, SQLException {
 		// TODO Auto-generated method stub
 		Connection conn = new Database().getDefaultConnection();
 		CallableStatement cstmt = null;
 		int rows = 0;
 		if (conn != null) {
 
-			cstmt = conn.prepareCall("{call DELETEAREA(?, ?)}");
+			cstmt = conn.prepareCall("{call DELETEAREA(?, ?, ?)}");
 			cstmt.setInt (1, idArea);
 			cstmt.setInt (2, idLav);
-		
+			cstmt.setInt (3, idLavOp);
 
 			rows = cstmt.executeUpdate();
 

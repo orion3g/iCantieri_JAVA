@@ -1,6 +1,7 @@
 package classi;
 
 import java.io.IOException;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,35 +10,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Cantiere {
-	
+
 	private int idCantiere;
 	private String nome;
 	private String descrizione;
-	
-	
-	
+
 	public int getIdCantiere() {
 		return idCantiere;
 	}
+
 	public void setIdCantiere(int idCantiere) {
 		this.idCantiere = idCantiere;
 	}
+
 	public String getNome() {
 		return nome;
 	}
+
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
+
 	public String getDescrizione() {
 		return descrizione;
 	}
+
 	public void setDescrizione(String descrizione) {
 		this.descrizione = descrizione;
 	}
-	
-	
-	//Funzione che mi restituisce tutti i cantieri nel DB  
-	
+
+	// Funzione che mi restituisce tutti i cantieri nel DB
+
 	public List<Cantiere> getAllCantieri() throws IOException, SQLException {
 		List<Cantiere> ListaCantieri = new ArrayList<Cantiere>();
 		Connection conn = new Database().getDefaultConnection();
@@ -54,7 +57,6 @@ public class Cantiere {
 				cantiere.setIdCantiere(rs.getInt(1));
 				cantiere.setNome(rs.getString(2));
 				cantiere.setDescrizione(rs.getString(3));
-		
 
 				ListaCantieri.add(cantiere);
 			}
@@ -62,7 +64,6 @@ public class Cantiere {
 		}
 		return ListaCantieri;
 	}
-	
 
 	// Funzione che restituisce un oggetto cantiere contenuto in una tabella nel
 	// database e con l'id corrispondente all'id passato come parametro
@@ -82,47 +83,76 @@ public class Cantiere {
 				cantiere.setIdCantiere(rs.getInt(1));
 				cantiere.setNome(rs.getString(2));
 				cantiere.setDescrizione(rs.getString(3));
-			
+
 			}
 			pstmt.close();
 		}
 		return cantiere;
 	}
-	
+
 	// Funzione utilizzata per salvare un cantiere. Se è presente l'id nell'oggetto
-		// cantiere allora aggiorna un operaio esistente, altrimenti ne crea uno nuovo
-		protected Boolean saveCantiere(Cantiere cantiere) throws IOException, SQLException {
-			// TODO Auto-generated method stub
-			Connection conn = new Database().getDefaultConnection();
-			PreparedStatement pstmt;
-			Integer rows = 0;
-			String query;
-			if (conn != null) {
-				if (cantiere.getIdCantiere() == 0) { // Se il cantiere non esiste
-					query = "INSERT INTO CANTIERE(nome, descrizione) values(?, ?)";
-					pstmt = conn.prepareStatement(query);
-					pstmt.setString(1, cantiere.getNome());
-					pstmt.setString(2, cantiere.getDescrizione());
+	// cantiere allora aggiorna un cantiere esistente, altrimenti ne crea uno nuovo
+	protected Boolean saveCantiere(Cantiere cantiere, Lavoratore Capocantiere) throws IOException, SQLException {
+		// TODO Auto-generated method stub
+		Connection conn = new Database().getDefaultConnection();
+		CallableStatement cstmt = null;
+		Integer rows = 0;
 
-				} else { // Se il cantiere esiste
-					query = "UPDATE CANTIERE SET nome = ?, descrizione = ? WHERE idcantiere = ?";
-					pstmt = conn.prepareStatement(query);
-					pstmt.setString(1, cantiere.getNome());
-					pstmt.setString(2, cantiere.getDescrizione());
-					pstmt.setInt(3, cantiere.getIdCantiere());
-				}
+		if (conn != null) {
+			if (cantiere.getIdCantiere() == 0) { // Se il cantiere non esiste
+				cstmt = conn.prepareCall("{call INSERTCANTIERE(?,?,?,?,?)}");
 
-				rows = pstmt.executeUpdate();
-				pstmt.close();
+				cstmt.setString(1, Capocantiere.getNome());
+				cstmt.setString(2, Capocantiere.getCognome());
+				cstmt.setTimestamp(3, java.sql.Timestamp.valueOf(Capocantiere.getDataNascita()));
+				cstmt.setString(4, cantiere.getNome());
+				cstmt.setString(5, cantiere.getDescrizione());
+
+				rows = cstmt.executeUpdate();
+			} else { // Se il cantiere esiste
+				cstmt = conn.prepareCall("{call UPDATECANTIERE(?,?,?,?,?,?,?)}");
+
+				cstmt.setString(1, Capocantiere.getNome());
+				cstmt.setString(2, Capocantiere.getCognome());
+				cstmt.setTimestamp(3, java.sql.Timestamp.valueOf(Capocantiere.getDataNascita()));
+				cstmt.setInt(4, Capocantiere.getIdLav());
+
+				cstmt.setString(5, cantiere.getNome());
+				cstmt.setString(6, cantiere.getDescrizione());
+				cstmt.setInt(7, cantiere.getIdCantiere());
+
+				rows = cstmt.executeUpdate();
+
 			}
 
-			if (rows > 0) {
-				return true;
-			}
+			cstmt.close();
+		}
+
+		if (rows > 0) {
+			return true;
+		}
+		return false;
+	}
+
+	// Funzione per eliminare un cantiere
+	public boolean deleteCantiere(int idCantiere, int idLav) throws IOException, SQLException {
+
+		// TODO Auto-generated method stub
+		Connection conn = new Database().getDefaultConnection();
+		PreparedStatement pstmt;
+		String query;
+		if (conn != null) {
+			query = "DELETE FROM cantiere WHERE idcantiere = ?";
+			pstmt = conn.prepareStatement(query);
+			pstmt.setInt(1, idCantiere);
+			pstmt.executeUpdate();
+			pstmt.close();
+		} else {
 			return false;
 		}
-	
-	
-	
+
+		return true;
+
+	}
 
 }

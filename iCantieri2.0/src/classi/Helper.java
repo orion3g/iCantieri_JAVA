@@ -68,7 +68,8 @@ public class Helper {
 		return result;
 	}
 
-	// Funzione che converte una List<DatiSensore> in un Object[][] necessario per la
+	// Funzione che converte una List<DatiSensore> in un Object[][] necessario per
+	// la
 	// costruzione di una JTable Amministratore
 	public static Object[][] ConvertDatiSensoreListToObject(List<DatiSensore> list) {
 		Object[][] result = new Object[list.size()][5];
@@ -77,7 +78,7 @@ public class Helper {
 			result[i][1] = list.get(i).getDatoRumore();
 			result[i][2] = list.get(i).getDatoGas();
 			result[i][3] = list.get(i).getAllarme();
-			
+
 			String dataConvertita = convertDate(dateTimeFormatDb, dateFormatApp, list.get(i).getDataGiorno());
 			// Converto la data nel formato adeguato
 			result[i][4] = dataConvertita;
@@ -85,7 +86,7 @@ public class Helper {
 		}
 		return result;
 	}
-	
+
 	// Funzione che converte una List<Area> in un Object[][] necessario per la
 	// costruzione di una JTable Amministratore
 	public static Object[][] ConvertAreaListToObject(List<Area> list) {
@@ -101,10 +102,11 @@ public class Helper {
 
 	// Funzione che converte una List<Sensore> in un Object[][] necessario per la
 	// costruzione di una JTable Amministratore
-	public static Object[][] ConvertSensoreListToObject(List<Area> list) {
-		Object[][] result = new Object[list.size()][1];
+	public static Object[][] ConvertSensoreListToObject(List<Sensore> list) {
+		Object[][] result = new Object[list.size()][2];
 		for (int i = 0; i < list.size(); i++) {
 			result[i][0] = list.get(i).getIdArea();
+			result[i][1] = list.get(i).getIdSensore();
 
 		}
 		return result;
@@ -134,26 +136,6 @@ public class Helper {
 			e1.printStackTrace();
 		}
 		return formatter.format(convertedDate);
-	}
-
-	// Funzione che controlla che la stringa sia un numero intero positivo
-	public static boolean isIntegerPositive(String strNum) {
-		if (strNum == null) {
-			return false;
-		}
-		try {
-			if (strNum.contains("f") || strNum.contains("F") || strNum.contains("d") || strNum.contains("D")
-					|| strNum.contains("l") || strNum.contains("L")) {
-				return false;
-			}
-			int d = Integer.parseInt(strNum);
-			if (d <= 0)
-				return false;
-		} catch (NumberFormatException nfe) {
-			System.out.println("Errore: stringa non numerica.");
-			return false;
-		}
-		return true;
 	}
 
 	// Funzione che controlla che l'operaio sia maggiorenne
@@ -239,14 +221,28 @@ public class Helper {
 	public static DefaultTableModel addElementsTableDatiSensore(List<DatiSensore> DatiSensore,
 			DefaultTableModel model) {
 		model.setRowCount(0); // mi resetto tutte le righe della tabella
-		
+
 		for (int i = 0; i < DatiSensore.size(); i++) {
 
 			model.insertRow(model.getRowCount(),
-					new Object[] {  DatiSensore.get(i).getIdSens(), DatiSensore.get(i).getDatoRumore(), DatiSensore.get(i).getDatoGas(),
-							DatiSensore.get(i).getAllarme(), Helper.convertDate(Helper.dateTimeFormatDb, Helper.dateFormatApp,
-									DatiSensore.get(i).getDataGiorno())
-							 });
+					new Object[] { DatiSensore.get(i).getIdSens(), DatiSensore.get(i).getDatoRumore(),
+							DatiSensore.get(i).getDatoGas(), DatiSensore.get(i).getAllarme(),
+							Helper.convertDate(Helper.dateTimeFormatDb, Helper.dateFormatApp,
+									DatiSensore.get(i).getDataGiorno()) });
+
+		}
+		return model;
+	}
+
+	// Funziona utilizzata per riempire tabella in base alla lista dei sensori
+
+	public static DefaultTableModel addElementsTableSensore(List<Sensore> sensore, DefaultTableModel model) {
+		model.setRowCount(0); // mi resetto tutte le righe della tabella
+
+		for (int i = 0; i < sensore.size(); i++) {
+
+			model.insertRow(model.getRowCount(),
+					new Object[] { sensore.get(i).getIdArea(), sensore.get(i).getIdSensore()});
 
 		}
 		return model;

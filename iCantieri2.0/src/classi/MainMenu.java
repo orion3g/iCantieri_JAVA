@@ -55,7 +55,6 @@ public class MainMenu {
 
 				try {
 
-
 					Lavoratore lavoratore = new Credenziali().verificaLogin(textUser.getText(), textPass.getPassword());
 
 					if (lavoratore.getTipoLav() != null) {
@@ -72,7 +71,6 @@ public class MainMenu {
 
 						{
 
-							
 							openCapocWindow(frame, lavoratore.getIdCant());
 
 						}
@@ -81,7 +79,7 @@ public class MainMenu {
 
 					else
 
-						System.out.print("ERRORE");
+						Helper.showErrorMessage(frame, "USERNAME O PASSWORD ERRATI");
 				}
 
 				catch (SQLException e) {
@@ -211,7 +209,7 @@ public class MainMenu {
 		frame.setVisible(true);
 	}
 
-	 protected static void openCapocWindow(JFrame frame, int idCant) {
+	protected static void openCapocWindow(JFrame frame, int idCant) {
 
 		MainMenu app = new MainMenu();
 		Component contents = app.createCapocComponents(frame, idCant);
@@ -238,8 +236,7 @@ public class MainMenu {
 		JButton ButtonOperai = new JButton("OPERAI");
 		JButton ButtonDatiSensore = new JButton("DATI SENSORE");
 		JButton ButtonTornaAlLogin = new JButton("Torna al login");
-		
-		
+
 		ButtonCantieri.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				openCantieriWindow(frame);
@@ -257,13 +254,13 @@ public class MainMenu {
 				openOperaiWindow(frame, 0);
 			}
 		});
-		
+
 		ButtonDatiSensore.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				openDatiSensoreWindow(frame, 0);
 			}
 		});
-		
+
 		ButtonTornaAlLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				showLogin(frame);
@@ -285,11 +282,15 @@ public class MainMenu {
 	public Component createCapocComponents(JFrame frame, int idCantiere) {
 		// funzione utilizzata per creare la pagina per il Capo cantiere
 
+		Font labelFont = new Font("SansSerif", Font.BOLD, 18);
 		GridLayout layout = new GridLayout(4, 1); // Definisco un group layout
 		layout.setVgap(20);
 
 		JPanel bodyPanel = new JPanel(layout); // Panel da inviare alla funzione chiamante
-
+		
+		JLabel nomeLabel = new JLabel("Benvenuto!"); // Label dei vari campi da modificare
+		nomeLabel.setFont(labelFont);
+		
 		JButton ButtonAree = new JButton("AREE");
 		JButton ButtonOperai = new JButton("OPERAI");
 		JButton ButtonDatiSensore = new JButton("DATI SENSORE");
@@ -306,22 +307,21 @@ public class MainMenu {
 				openOperaiWindow(frame, idCantiere);
 			}
 		});
-		
+
 		ButtonDatiSensore.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				openDatiSensoreWindow(frame, idCantiere);
 			}
 		});
-		
+
 		ButtonTornaAlLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				showLogin(frame);
 			}
 		});
-		
-		
 
 		// Aggiungo i vari elementi al panel
+
 		bodyPanel.add(ButtonOperai);
 		bodyPanel.add(ButtonAree);
 		bodyPanel.add(ButtonDatiSensore);
@@ -351,7 +351,7 @@ public class MainMenu {
 	}
 
 	protected void openOperaiWindow(JFrame frame, int idCant) { // Funzione per accedere agli operai
-		
+
 		try {
 			new OperaiWindows().showListaOperaiView(frame, idCant);
 		} catch (IOException e) {
@@ -361,8 +361,6 @@ public class MainMenu {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
 
 	}
 
@@ -376,12 +374,12 @@ public class MainMenu {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	
-	protected void openDatiSensoreWindow(JFrame frame, int idCant) { // Funzione per accedere alle aree
+
+	protected void openDatiSensoreWindow(JFrame frame, int idCant) { // Funzione per accedere ai dati dei sensori
 		try {
-			new DatiSensoreWindows().showListaAreeView(frame, idCant);
+			new DatiSensoreWindows().showListaDatiSensoreView(frame, idCant);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -389,7 +387,7 @@ public class MainMenu {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 }

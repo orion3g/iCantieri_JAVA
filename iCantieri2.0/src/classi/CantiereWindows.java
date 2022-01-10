@@ -44,6 +44,8 @@ public class CantiereWindows {
 	Cantiere cantiere = new Cantiere();
 	Lavoratore lavoratore = new Lavoratore();
 	int idCant;
+	int idCantSelezionato;
+	Lavoratore CapoCantiere = new Lavoratore();
 
 	Component contents = null;
 
@@ -61,7 +63,7 @@ public class CantiereWindows {
 		frame.setVisible(true);
 	}
 
-    // Funzione utilizzata per creare la pagina che contiene la lista dei cantieri
+	// Funzione utilizzata per creare la pagina che contiene la lista dei cantieri
 
 	private Component createListaCantieriComponents(List<Cantiere> cantiere, JFrame frame) {
 		Font headerFont = new Font("SansSerif", Font.BOLD, 20);
@@ -95,7 +97,7 @@ public class CantiereWindows {
 		table.setFont(tableFont);
 		table.setRowHeight(30);
 		table.getColumnModel().getColumn(0).setPreferredWidth(100);
-		table.getColumnModel().getColumn(1).setPreferredWidth(500);
+		table.getColumnModel().getColumn(1).setPreferredWidth(100);
 		table.getColumnModel().getColumn(2).setPreferredWidth(200);
 		// table.getColumnModel().getColumn(3).setPreferredWidth(200);
 
@@ -183,7 +185,8 @@ public class CantiereWindows {
 		return panelContainer;
 	}
 
-    //Quando questa funzione viene richiamata mostra la pagina che visualizza la lista dei Capo Cantieri 
+	// Quando questa funzione viene richiamata mostra la pagina che visualizza la
+	// lista dei Capo Cantieri
 	private void showCapoCantieriView(JFrame frame) throws IOException, SQLException {
 
 		Component contents = createListaCapoCantieriComponents(frame);
@@ -194,7 +197,8 @@ public class CantiereWindows {
 		frame.setVisible(true);
 	}
 
-	// Funzione utilizzata per creare la pagina che contiene la lista dei CapoCantieri
+	// Funzione utilizzata per creare la pagina che contiene la lista dei
+	// CapoCantieri
 
 	private Component createListaCapoCantieriComponents(JFrame frame) throws IOException, SQLException {
 		Font headerFont = new Font("SansSerif", Font.BOLD, 20);
@@ -203,31 +207,14 @@ public class CantiereWindows {
 		List<Lavoratore> ListCapoCantiere = new ArrayList<Lavoratore>();
 		ListCapoCantiere = lavoratore.getAllCapoCantieri();
 
-		String[] columnNames = { "ID", "NOME", "COGNOME", "DATA NASCITA", "IDCANTIERE" }; // Lista degli header della tabella
+		String[] columnNames = { "ID", "NOME", "COGNOME", "DATA NASCITA", "IDCANTIERE" }; // Lista degli header della
+																							// tabella
 		Object[][] data = Helper.ConvertOperaioListToObject(ListCapoCantiere); // Elementi della tabella
 
 		JTable table = new JTable(data, columnNames); // Creo la tabella riempendola con i dati
 		table.getTableHeader().setFont(headerFont);
 		table.setDefaultEditor(Object.class, null); // Rendo la tabella non editabile
-		table.addMouseListener(new MouseAdapter() { // Creo una funzione che consente di aprire la scheda dell'oggetto
-			public void mouseClicked(MouseEvent me) {
-				if (me.getClickCount() == 2) { // Sul doppio click parte la funzione
-					JTable target = (JTable) me.getSource();
-					int row = target.getSelectedRow(); // Seleziono la riga
-					Integer idLav = (Integer) target.getValueAt(row, 0); // Seleziono l'id corrispondente a quella riga
-					try {
-						showModificaCapoCantieriView(frame, idLav);
-					} catch (IOException | SQLException e) {
-						// TODO Auto-generated catch block
-						Helper.showErrorMessage(frame, "Errore durante il cambio pagina"); // Potrebbe avvenire qualche
-																							// errore durante il cambio
-																							// pagina(connessione
-																							// fallita per esempio)
-						e.printStackTrace();
-					}
-				}
-			}
-		});
+		
 		table.setFont(tableFont);
 		table.setRowHeight(30);
 		table.getColumnModel().getColumn(0).setPreferredWidth(100);
@@ -259,25 +246,7 @@ public class CantiereWindows {
 				}
 			}
 		});
-		
-		
-		JButton addCapoCantiereButton = new JButton("Aggiungi Capo Cantiere"); // Bottone per aggiungere un capocantiere
-		addCapoCantiereButton.setPreferredSize(new Dimension(100, 50));
-		addCapoCantiereButton.setFont(new Font("Arial", Font.PLAIN, 20));
-		addCapoCantiereButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
 
-				try {
-					showCreaCapocantieriView(frame);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
 
 		JPanel panelContainer = new JPanel();
 		panelContainer.add(pageLabel);
@@ -290,17 +259,17 @@ public class CantiereWindows {
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 
-		layout.setHorizontalGroup(layout.createSequentialGroup().addGroup(layout
-				.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(pageLabel).addComponent(scrollPanel)
-				.addGroup(layout.createSequentialGroup()
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-								.addComponent(addCapoCantiereButton))
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-								.addComponent(mainMenuButton)))));
-		
-		
+		layout.setHorizontalGroup(layout.createSequentialGroup()
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(pageLabel)
+						.addComponent(scrollPanel)
+						.addGroup(layout.createSequentialGroup()
+								
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+										.addComponent(mainMenuButton)))));
+
 		layout.setVerticalGroup(layout.createSequentialGroup().addComponent(pageLabel).addComponent(scrollPanel)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(mainMenuButton).addComponent(addCapoCantiereButton)));
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(mainMenuButton)
+						));
 
 		return panelContainer;
 	}
@@ -310,8 +279,9 @@ public class CantiereWindows {
 	private void showModificaCantiereView(JFrame frame, Integer idCant) throws IOException, SQLException {
 
 		cantiere = cantiere.getCantiere(idCant);
-
-		Component contents = createModificaCantiereComponents(frame, cantiere); // Utilizzo la funzione che mi
+		CapoCantiere= CapoCantiere.getCapocPerCant(idCant);
+		
+		Component contents = createModificaCantiereComponents(frame, cantiere, CapoCantiere); // Utilizzo la funzione che mi
 																				// restituisce
 																				// un
 																				// panel da inserire nel frame
@@ -324,27 +294,78 @@ public class CantiereWindows {
 
 	// Funzione utilizzata per creare la pagina che consente la modifica del
 	// Cantiere
-	private Component createModificaCantiereComponents(JFrame frame, Cantiere oldCantiere) {
+	private Component createModificaCantiereComponents(JFrame frame, Cantiere oldCantiere, Lavoratore oldCapoC) {
 		// TODO Auto-generated method stub
 		Font headerFont = new Font("SansSerif", Font.BOLD, 20);
 		Font labelFont = new Font("SansSerif", Font.BOLD, 18);
 		Font normalFont = new Font("SansSerif", Font.PLAIN, 18);
-
-		JLabel pageLabel = new JLabel("Modifica Cantiere"); // Titolo
+		
+		JLabel pageLabel = new JLabel("MODIFICA CANTIERE"); // Titolo
 		pageLabel.setFont(headerFont);
+
+		JLabel pageLabelCapoc = new JLabel("MODIFICA CAPOCANTIERE"); // Titolo
+		pageLabelCapoc.setFont(headerFont);
+
+		JLabel nomeCantiereLabel = new JLabel("NOME"); // Label dei vari campi da modificare
+		nomeCantiereLabel.setFont(labelFont);
+		JLabel descrizioneLabel = new JLabel("DESCRIZIONE");
+		descrizioneLabel.setFont(labelFont);
+
 
 		JLabel nomeLabel = new JLabel("NOME"); // Label dei vari campi da modificare
 		nomeLabel.setFont(labelFont);
-		JLabel DescrizioneLabel = new JLabel("DESCRIZIONE");
-		DescrizioneLabel.setFont(labelFont);
+		JLabel cognomeLabel = new JLabel("COGNOME");
+		cognomeLabel.setFont(labelFont);
+		JLabel dataNascitaLabel = new JLabel("DATA NASCITA");
+		dataNascitaLabel.setFont(labelFont);
+		JLabel dataNascitaGiornoLabel = new JLabel("Giorno(dd)");
+		dataNascitaGiornoLabel.setFont(labelFont);
+		JLabel dataNascitaMeseLabel = new JLabel("Mese(MM)");
+		dataNascitaMeseLabel.setFont(labelFont);
+		JLabel dataNascitaAnnoLabel = new JLabel("Anno(yyyy)");
+		dataNascitaAnnoLabel.setFont(labelFont);
 
-		JTextField nomeTF = new JTextField(oldCantiere.getNome()); // Campi da modificare
+
+		
+		JTextField nomeTF = new JTextField(oldCapoC.getNome()); // Campi da compilare
 		nomeTF.setFont(normalFont);
+		JTextField cognomeTF = new JTextField(oldCapoC.getCognome());
+		cognomeTF.setFont(normalFont);
+		String oldDataNascita = oldCapoC.getDataNascita();
+		String dataNascitaConvertita = Helper.convertDate(Helper.dateTimeFormatDb, Helper.dateFormatApp,
+				oldDataNascita); // Funzione
+									// che
+									// consente
+									// di
+									// convertire
+									// il
+									// formato
+									// della
+									// data
+
+		JTextField dataNascitaGiornoTF = new JTextField(dataNascitaConvertita.substring(0, 2));
+		dataNascitaGiornoTF.setFont(normalFont);
+		JTextField dataNascitaMeseTF = new JTextField(dataNascitaConvertita.substring(3, 5));
+		dataNascitaMeseTF.setFont(normalFont);
+		JTextField dataNascitaAnnoTF = new JTextField(dataNascitaConvertita.substring(6, 10));
+		dataNascitaAnnoTF.setFont(normalFont);
+
+		
+		
+		JTextField nomeCantiereTF = new JTextField(oldCantiere.getNome()); // Campi da modificare
+		nomeCantiereTF.setFont(normalFont);
 		JTextField descrizioneTF = new JTextField(String.valueOf(oldCantiere.getDescrizione()));
 		descrizioneTF.setFont(normalFont);
+		
 
 		nomeLabel.setLabelFor(nomeTF); // Associo le label ai vari campi
-		DescrizioneLabel.setLabelFor(descrizioneTF);
+		descrizioneLabel.setLabelFor(descrizioneTF);
+		
+		nomeLabel.setLabelFor(nomeTF); // Associo le label ai vari campi
+		cognomeLabel.setLabelFor(cognomeTF);
+		dataNascitaGiornoLabel.setLabelFor(dataNascitaGiornoTF);
+		dataNascitaMeseLabel.setLabelFor(dataNascitaMeseTF);
+		dataNascitaAnnoLabel.setLabelFor(dataNascitaAnnoTF);
 
 		JButton salvaButton = new JButton("Salva"); // Bottone per aggiornare il cantiere
 		salvaButton.setPreferredSize(new Dimension(100, 50));
@@ -354,49 +375,79 @@ public class CantiereWindows {
 
 		salvaButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) { // Funzione di salvataggio sul click
-				String nome = nomeTF.getText(); // Leggo i valori nei campi
+				String nomeCantiere = nomeCantiereTF.getText(); // Leggo i valori nei campi
 				String descrizione = descrizioneTF.getText();
+				String nome = nomeTF.getText(); // Leggo i valori nei campi
+				String cognome = cognomeTF.getText();
+				String dataNGiorno = dataNascitaGiornoTF.getText();
+				String dataNMese = dataNascitaMeseTF.getText();
+				String dataNAnno = dataNascitaAnnoTF.getText();
+				String dataNascita = dataNGiorno + "/" + dataNMese + "/" + dataNAnno;
 
 				Boolean result = false;
 
 				Cantiere cantiere = new Cantiere();
+				
+				
 
-				if (nome.isEmpty() || descrizione.isEmpty()) {
+				if (nomeCantiere.isEmpty() || descrizione.isEmpty() ||nome.isEmpty() || cognome.isEmpty() || dataNGiorno.isEmpty() || dataNMese.isEmpty()
+						|| dataNAnno.isEmpty()) {
 					// Controllo che non ci siano campi vuoti
 					setMessage("Tutti i campi devono essere compilati");
 				} else {
+					if (Helper.isDate(dataNascita, Helper.dateFormatApp))
+						if (Helper.isMaggiorenne(dataNascita))
 
-					cantiere.setIdCantiere(oldCantiere.getIdCantiere());
-					cantiere.setNome(nome);
-					cantiere.setDescrizione(descrizione);
+						{
 
-					try {
-						result = cantiere.saveCantiere(cantiere);
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+							// Controllo che i valori nei campi non stringa siano validi
+							String dataNascitaRiconvertita = Helper.convertDate(Helper.dateFormatApp,
+									Helper.dateTimeFormatDb, dataNascita);
+							// Funzione che consente di converte il formato della data
 
-					if (result) { // Se il salvataggio del cantiere avviene con successo
-						Helper.showSuccessMessage(frame, "Cantiere salvato correttamente");
-						try {
-							showListaCantieriView(frame); // Torna alla lista dei cantieri
-						} catch (IOException | SQLException e) {
-							// TODO Auto-generated catch block
-							Helper.showErrorMessage(frame, "Errore durante il cambio pagina"); // Potrebbe avvenire
-																								// qualche
-																								// errore durante il
-																								// cambio
-																								// pagina(connessione
-																								// fallita per esempio)
-							e.printStackTrace();
+							cantiere.setIdCantiere(oldCantiere.getIdCantiere());
+							cantiere.setNome(nomeCantiere);
+							cantiere.setDescrizione(descrizione);
+							
+							CapoCantiere.setIdLav(oldCapoC.getIdLav());
+							CapoCantiere.setNome(nome);
+							CapoCantiere.setCognome(cognome);
+							CapoCantiere.setDataNascita(dataNascitaRiconvertita);
+
+							try {
+								result = cantiere.saveCantiere(cantiere, CapoCantiere);
+							} catch (IOException | SQLException e) {
+								// TODO Auto-generated catch block
+								Helper.showErrorMessage(frame, getMessage());
+								e.printStackTrace();
+							}
+						} else {
+							setMessage(
+									"1) Il campo data nascita deve avere un formato dd/mm/yyyy \n"
+									+ "2) il capocantiere deve essere maggiorenne"); // I
+							// campi
+							// non
+							// sono
+							// stati
+							// compilati
+							// correttamente
 						}
-					} else { // Altrimenti se il salvataggio del cantiere non avviene con successo
-						Helper.showErrorMessage(frame, getMessage());
+				}
+
+				if (result) { // Se il salvataggio dell'operaio avviene con successo
+					Helper.showSuccessMessage(frame, "Cantiere salvato correttamente");
+					try {
+						showListaCantieriView(frame); // Torna alla lista degli operai
+					} catch (IOException | SQLException e) {
+						// TODO Auto-generated catch block
+						Helper.showErrorMessage(frame, "Errore durante il cambio pagina"); // Potrebbe avvenire qualche
+																							// errore durante il cambio
+																							// pagina(connessione
+																							// fallita per esempio)
+						e.printStackTrace();
 					}
+				} else { // Altrimenti se il salvataggio dell'operaio non avviene con successo
+					Helper.showErrorMessage(frame, getMessage());
 				}
 			}
 		});
@@ -408,34 +459,34 @@ public class CantiereWindows {
 		eliminaButton.setFont(new Font("Arial", Font.PLAIN, 20));
 		eliminaButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-//				int risposta = JOptionPane.showConfirmDialog(frame, "Sei sicuro di voler eliminare l'operaio?",
-//						"ELIMINA OPERAIO", JOptionPane.YES_NO_OPTION);
-//				if (risposta == 0) {
-//					Boolean result = false;
-//					try {
-//						result = deleteOperaio(oldCantiere.getIdCantiere());
-//					} catch (IOException | SQLException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//
-//					if (result) { // Se l'eliminazione avviene con successo
-//						Helper.showSuccessMessage(frame, "Operaio  eliminato correttamente");
-//						try {
-//							showListaOperaiView(frame, idCant); // Torna alla lista degli operai
-//						} catch (IOException | SQLException e) {
-//							// TODO Auto-generated catch block
-//							Helper.showErrorMessage(frame, "Errore durante il cambio pagina"); // Potrebbe avvenire
-//																								// qualche errore
-//																								// durante il cambio
-//																								// pagina(connessione
-//																								// mancante per esempio)
-//							e.printStackTrace();
-//						}
-//					} else { // Altrimenti se l'eliminazione dei dati non avviene con successo
-//						Helper.showErrorMessage(frame, "Errore durante l'eliminazione dell'operaio");
-//					}
-				// }
+				int risposta = JOptionPane.showConfirmDialog(frame, "Sei sicuro di voler eliminare il cantiere?",
+						"ELIMINA CANTIERE", JOptionPane.YES_NO_OPTION);
+				if (risposta == 0) {
+					Boolean result = false;
+					try {
+						result = cantiere.deleteCantiere(oldCantiere.getIdCantiere(), oldCapoC.getIdLav());
+					} catch (IOException | SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					if (result) { // Se l'eliminazione avviene con successo
+						Helper.showSuccessMessage(frame, "Cantiere  eliminato correttamente");
+						try {
+							showListaCantieriView(frame); // Torna alla lista degli operai
+						} catch (IOException | SQLException e) {
+							// TODO Auto-generated catch block
+							Helper.showErrorMessage(frame, "Errore durante il cambio pagina"); // Potrebbe avvenire
+																								// qualche errore
+																								// durante il cambio
+																								// pagina(connessione
+																								// mancante per esempio)
+							e.printStackTrace();
+						}
+					} else { // Altrimenti se l'eliminazione dei dati non avviene con successo
+						Helper.showErrorMessage(frame, "Errore durante l'eliminazione del cantiere");
+					}
+				 }
 
 			}
 		});
@@ -469,12 +520,29 @@ public class CantiereWindows {
 
 		layout.setHorizontalGroup(layout.createSequentialGroup() // Definisco l'horizontalGroup
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(pageLabel)
-						.addGroup(layout.createSequentialGroup()
-								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-										.addComponent(nomeLabel).addComponent(DescrizioneLabel))
+						.addComponent(pageLabelCapoc)
+						.addGroup(layout.createSequentialGroup().addGroup(layout
+								.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(nomeCantiereLabel)
+								.addComponent(descrizioneLabel).addComponent(nomeLabel).addComponent(cognomeLabel)
+								.addComponent(dataNascitaLabel))
+
 								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-										.addComponent(nomeTF).addComponent(descrizioneTF)))
-						.addGroup(layout.createSequentialGroup()
+										.addComponent(nomeCantiereTF).addComponent(descrizioneTF).addComponent(nomeTF)
+										.addComponent(cognomeTF)
+										.addGroup(layout.createSequentialGroup()
+												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+														.addComponent(dataNascitaGiornoLabel))
+												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+														.addComponent(dataNascitaGiornoTF))
+												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+														.addComponent(dataNascitaMeseLabel))
+												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+														.addComponent(dataNascitaMeseTF))
+												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+														.addComponent(dataNascitaAnnoLabel))
+												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+														.addComponent(dataNascitaAnnoTF)))))					
+						.addGroup(layout.createSequentialGroup()	
 								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 										.addComponent(salvaButton))
 								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
@@ -484,265 +552,11 @@ public class CantiereWindows {
 
 		layout.setVerticalGroup(layout.createSequentialGroup() // Definisco il verticalGroup
 				.addComponent(pageLabel)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(nomeLabel)
-						.addComponent(nomeTF))
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(DescrizioneLabel)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(nomeCantiereLabel)
+						.addComponent(nomeCantiereTF))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(descrizioneLabel)
 						.addComponent(descrizioneTF))
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(salvaButton)
-						.addComponent(tornaAllaListaButton).addComponent(eliminaButton)));
-
-		return panelContainer;
-	}
-
-	// Quando questa funzione viene richiamata mostra la pagina che consente la
-	// modifica dei capocantieri
-	private void showModificaCapoCantieriView(JFrame frame, Integer idLav) throws IOException, SQLException {
-
-		lavoratore = lavoratore.getLavoratore(idLav);
-
-		Component contents = createModificaCapocantieriComponents(frame, lavoratore); // Utilizzo la funzione che mi
-		// restituisce
-		// un
-		// panel da inserire nel frame
-
-		frame.getContentPane().removeAll(); // Pulisco il frame esistente
-		frame.getContentPane().add(contents, BorderLayout.CENTER); // Inserisco i nuovi componenti nel frame
-		frame.pack();
-		frame.setVisible(true);
-	}
-
-	// Funzione utilizzata per creare la pagina che consente la modifica del
-	// CapoCantiere
-	private Component createModificaCapocantieriComponents(JFrame frame, Lavoratore oldCapoCantiere) {
-		// TODO Auto-generated method stub
-		Font headerFont = new Font("SansSerif", Font.BOLD, 20);
-		Font labelFont = new Font("SansSerif", Font.BOLD, 18);
-		Font normalFont = new Font("SansSerif", Font.PLAIN, 18);
-
-		JLabel pageLabel = new JLabel("Modifica Capo Cantiere"); // Titolo
-		pageLabel.setFont(headerFont);
-
-		JLabel nomeLabel = new JLabel("NOME"); // Label dei vari campi da modificare
-		nomeLabel.setFont(labelFont);
-		JLabel cognomeLabel = new JLabel("COGNOME");
-		cognomeLabel.setFont(labelFont);
-		JLabel dataNascitaLabel = new JLabel("DATA NASCITA");
-		dataNascitaLabel.setFont(labelFont);
-		JLabel dataNascitaGiornoLabel = new JLabel("Giorno(dd)");
-		dataNascitaGiornoLabel.setFont(labelFont);
-		JLabel dataNascitaMeseLabel = new JLabel("Mese(MM)");
-		dataNascitaMeseLabel.setFont(labelFont);
-		JLabel dataNascitaAnnoLabel = new JLabel("Anno(yyyy)");
-		dataNascitaAnnoLabel.setFont(labelFont);
-
-		JTextField nomeTF = new JTextField(oldCapoCantiere.getNome()); // Campi da modificare
-		nomeTF.setFont(normalFont);
-		JTextField cognomeTF = new JTextField(String.valueOf(oldCapoCantiere.getCognome()));
-		cognomeTF.setFont(normalFont);
-
-		String oldDataNascita = oldCapoCantiere.getDataNascita();
-		String dataNascitaConvertita = Helper.convertDate(Helper.dateTimeFormatDb, Helper.dateFormatApp,
-				oldDataNascita); // Funzione
-									// che
-									// consente
-									// di
-									// convertire
-									// il
-									// formato
-									// della
-									// data
-
-		JTextField dataNascitaGiornoTF = new JTextField(dataNascitaConvertita.substring(0, 2));
-		dataNascitaGiornoTF.setFont(normalFont);
-		JTextField dataNascitaMeseTF = new JTextField(dataNascitaConvertita.substring(3, 5));
-		dataNascitaMeseTF.setFont(normalFont);
-		JTextField dataNascitaAnnoTF = new JTextField(dataNascitaConvertita.substring(6, 10));
-		dataNascitaAnnoTF.setFont(normalFont);
-
-		nomeLabel.setLabelFor(nomeTF); // Associo le label ai vari campi
-		cognomeLabel.setLabelFor(cognomeTF);
-		dataNascitaGiornoLabel.setLabelFor(dataNascitaGiornoTF);
-		dataNascitaMeseLabel.setLabelFor(dataNascitaGiornoTF);
-		dataNascitaAnnoLabel.setLabelFor(dataNascitaGiornoTF);
-
-		JButton salvaButton = new JButton("Salva"); // Bottone per aggiornare il cantiere
-		salvaButton.setPreferredSize(new Dimension(100, 50));
-		salvaButton.setBackground(Color.GREEN);
-		salvaButton.setForeground(Color.BLACK);
-		salvaButton.setFont(new Font("Arial", Font.PLAIN, 20));
-
-		salvaButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) { // Funzione di salvataggio sul click
-				String nome = nomeTF.getText(); // Leggo i valori nei campi
-				String cognome = cognomeTF.getText();
-				String dataNGiorno = dataNascitaGiornoTF.getText();
-				String dataNMese = dataNascitaMeseTF.getText();
-				String dataNAnno = dataNascitaAnnoTF.getText();
-				String dataNascita = dataNGiorno + "/" + dataNMese + "/" + dataNAnno;
-				Boolean result = false;
-
-				Lavoratore capoCantiere = new Lavoratore();
-
-				if (nome.isEmpty() || cognome.isEmpty() || dataNGiorno.isEmpty() || dataNMese.isEmpty()
-						|| dataNAnno.isEmpty()) {
-					// Controllo che non ci siano campi vuoti
-					setMessage("Tutti i campi devono essere compilati");
-				} else {
-					if (Helper.isDate(dataNascita, Helper.dateFormatApp))
-						if (Helper.isMaggiorenne(dataNascita))
-
-						{
-
-							// Controllo che i valori nei campi non stringa siano validi
-							String dataNascitaRiconvertita = Helper.convertDate(Helper.dateFormatApp,
-									Helper.dateTimeFormatDb, dataNascita);
-							// Funzione che consente di converte il formato della data
-
-							capoCantiere.setIdLav(oldCapoCantiere.getIdLav());
-							capoCantiere.setNome(nome);
-							capoCantiere.setCognome(cognome);
-							capoCantiere.setDataNascita(dataNascitaRiconvertita);
-
-							try {
-								result = lavoratore.saveCapocantiere(capoCantiere);
-							} catch (IOException | SQLException e) {
-								// TODO Auto-generated catch block
-								Helper.showErrorMessage(frame, getMessage());
-								e.printStackTrace();
-							}
-						} else {
-							setMessage(
-									"Il campo data nascita deve avere un formato dd/mm/yyyy e l'operaio deve essere maggiorenne"); // I
-							// campi
-							// non
-							// sono
-							// stati
-							// compilati
-							// correttamente
-						}
-				}
-
-				if (result) { // Se il salvataggio dell'operaio avviene con successo
-					Helper.showSuccessMessage(frame, "Capo Cantiere salvato correttamente");
-					try {
-						showListaCantieriView(frame); // Torna alla lista degli operai
-					} catch (IOException | SQLException e) {
-						// TODO Auto-generated catch block
-						Helper.showErrorMessage(frame, "Errore durante il cambio pagina"); // Potrebbe avvenire qualche
-																							// errore durante il cambio
-																							// pagina(connessione
-																							// fallita per esempio)
-						e.printStackTrace();
-					}
-				} else { // Altrimenti se il salvataggio dell'operaio non avviene con successo
-					Helper.showErrorMessage(frame, getMessage());
-				}
-			}
-		});
-
-		JButton eliminaButton = new JButton("Elimina"); // Bottone per eliminare l'operaio
-		eliminaButton.setPreferredSize(new Dimension(100, 50));
-		eliminaButton.setBackground(Color.RED);
-		eliminaButton.setForeground(Color.BLACK);
-		eliminaButton.setFont(new Font("Arial", Font.PLAIN, 20));
-		eliminaButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-//					int risposta = JOptionPane.showConfirmDialog(frame, "Sei sicuro di voler eliminare l'operaio?",
-//							"ELIMINA OPERAIO", JOptionPane.YES_NO_OPTION);
-//					if (risposta == 0) {
-//						Boolean result = false;
-//						try {
-//							result = deleteOperaio(oldCantiere.getIdCantiere());
-//						} catch (IOException | SQLException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
-				//
-//						if (result) { // Se l'eliminazione avviene con successo
-//							Helper.showSuccessMessage(frame, "Operaio  eliminato correttamente");
-//							try {
-//								showListaOperaiView(frame, idCant); // Torna alla lista degli operai
-//							} catch (IOException | SQLException e) {
-//								// TODO Auto-generated catch block
-//								Helper.showErrorMessage(frame, "Errore durante il cambio pagina"); // Potrebbe avvenire
-//																									// qualche errore
-//																									// durante il cambio
-//																									// pagina(connessione
-//																									// mancante per esempio)
-//								e.printStackTrace();
-//							}
-//						} else { // Altrimenti se l'eliminazione dei dati non avviene con successo
-//							Helper.showErrorMessage(frame, "Errore durante l'eliminazione dell'operaio");
-//						}
-				// }
-
-			}
-		});
-
-		JButton tornaAllaListaButton = new JButton("Torna alla lista"); // Bottone per tornare alla lista dei film
-		tornaAllaListaButton.setPreferredSize(new Dimension(100, 50));
-		tornaAllaListaButton.setFont(new Font("Arial", Font.PLAIN, 20));
-		tornaAllaListaButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				try {
-					showListaCantieriView(frame); // Torna alla lista degli operai
-				} catch (IOException | SQLException e) {
-					// TODO Auto-generated catch block
-					Helper.showErrorMessage(frame, "Errore durante il cambio pagina"); // Potrebbe avvenire qualche
-																						// errore durante il cambio
-																						// pagina(connessione mancante
-																						// per esempio)
-					e.printStackTrace();
-				}
-			}
-		});
-
-		JPanel panelContainer = new JPanel(); // Panel da inviare alla funzione chiamante
-		panelContainer.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-
-		GroupLayout layout = new GroupLayout(panelContainer); // Definisco un group layout
-		panelContainer.setLayout(layout);
-
-		layout.setAutoCreateGaps(true);
-		layout.setAutoCreateContainerGaps(true);
-
-		layout.setHorizontalGroup(layout.createSequentialGroup() // Definisco l'horizontalGroup
-				.addGroup(
-						layout.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(pageLabel)
-								.addGroup(layout.createSequentialGroup().addGroup(layout
-										.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(nomeLabel)
-										.addComponent(cognomeLabel).addComponent(dataNascitaLabel))
-										.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-												.addComponent(nomeTF).addComponent(cognomeTF)
-												.addGroup(layout.createSequentialGroup()
-														.addGroup(layout
-																.createParallelGroup(GroupLayout.Alignment.LEADING)
-																.addComponent(dataNascitaGiornoLabel))
-														.addGroup(layout
-																.createParallelGroup(GroupLayout.Alignment.LEADING)
-																.addComponent(dataNascitaGiornoTF))
-														.addGroup(layout
-																.createParallelGroup(GroupLayout.Alignment.LEADING)
-																.addComponent(dataNascitaMeseLabel))
-														.addGroup(layout
-																.createParallelGroup(GroupLayout.Alignment.LEADING)
-																.addComponent(dataNascitaMeseTF))
-														.addGroup(layout
-																.createParallelGroup(GroupLayout.Alignment.LEADING)
-																.addComponent(dataNascitaAnnoLabel))
-														.addGroup(layout
-																.createParallelGroup(GroupLayout.Alignment.LEADING)
-																.addComponent(dataNascitaAnnoTF)))))
-								.addGroup(layout.createSequentialGroup()
-										.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-												.addComponent(salvaButton))
-										.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-												.addComponent(tornaAllaListaButton))
-										.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-												.addComponent(eliminaButton)))));
-
-		layout.setVerticalGroup(layout.createSequentialGroup() // Definisco il verticalGroup
-				.addComponent(pageLabel)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(pageLabelCapoc))
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(nomeLabel)
 						.addComponent(nomeTF))
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(cognomeLabel)
@@ -770,386 +584,235 @@ public class CantiereWindows {
 		frame.setVisible(true);
 	}
 
+	// Funzione utilizzata per creare la pagina che consente la creazione dei
+	// cantieri
+	private Component createCantiereComponents(JFrame frame) throws IOException, SQLException {
+		// TODO Auto-generated method stub
+		Font headerFont = new Font("SansSerif", Font.BOLD, 20);
+		Font labelFont = new Font("SansSerif", Font.BOLD, 18);
+		Font normalFont = new Font("SansSerif", Font.PLAIN, 18);
+		Font tableFont = new Font("Arial", Font.PLAIN, 18);
 
-	// Funzione utilizzata per creare la pagina che consente la creazione dei cantieri
-		private Component createCantiereComponents(JFrame frame) throws IOException, SQLException {
-			// TODO Auto-generated method stub
-			Font headerFont = new Font("SansSerif", Font.BOLD, 20);
-			Font labelFont = new Font("SansSerif", Font.BOLD, 18);
-			Font normalFont = new Font("SansSerif", Font.PLAIN, 18);
-			Font tableFont = new Font("Arial", Font.PLAIN, 18);
+		JLabel pageLabel = new JLabel("Crea cantiere"); // Titolo
+		pageLabel.setFont(headerFont);
 
-			JLabel pageLabel = new JLabel("Crea cantiere"); // Titolo
-			pageLabel.setFont(headerFont);
+		JLabel pageLabelCapoc = new JLabel("Crea Capocantiere"); // Titolo
+		pageLabelCapoc.setFont(headerFont);
 
-			JLabel nomeLabel = new JLabel("NOME"); // Label dei vari campi da modificare
-			nomeLabel.setFont(labelFont);
-			JLabel descrizioneLabel = new JLabel("DESCRIZIONE");
-			descrizioneLabel.setFont(labelFont);
-		
-			JTextField nomeTF = new JTextField(); // Campi da compilare
-			nomeTF.setFont(normalFont);
-			JTextField descrizioneTF = new JTextField();
-			descrizioneTF.setFont(normalFont);
-			
+		JLabel nomeCantiereLabel = new JLabel("NOME"); // Label dei vari campi da modificare
+		nomeCantiereLabel.setFont(labelFont);
+		JLabel descrizioneLabel = new JLabel("DESCRIZIONE");
+		descrizioneLabel.setFont(labelFont);
 
-			nomeLabel.setLabelFor(nomeTF); // Associo le label ai vari campi
-			descrizioneLabel.setLabelFor(descrizioneTF);
-	
-			JButton salvaButton = new JButton("Salva"); // Bottone per salvare il nuovo operaio
-			salvaButton.setPreferredSize(new Dimension(100, 50));
-			salvaButton.setBackground(Color.GREEN);
-			salvaButton.setForeground(Color.BLACK);
-			salvaButton.setFont(new Font("Arial", Font.PLAIN, 20));
-			salvaButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt) { // Funzione di salvataggio sul click
-					String nome = nomeTF.getText(); // Leggo i valori nei campi
-					String descrizione = descrizioneTF.getText();
-					Boolean result = false;
+		JLabel pageLabelCantiere = new JLabel("Capo Cantiere"); // Titolo
+		pageLabel.setFont(headerFont);
 
-                    
+		JLabel nomeLabel = new JLabel("NOME"); // Label dei vari campi da modificare
+		nomeLabel.setFont(labelFont);
+		JLabel cognomeLabel = new JLabel("COGNOME");
+		cognomeLabel.setFont(labelFont);
+		JLabel dataNascitaLabel = new JLabel("DATA NASCITA");
+		dataNascitaLabel.setFont(labelFont);
+		JLabel dataNascitaGiornoLabel = new JLabel("Giorno(dd)");
+		dataNascitaGiornoLabel.setFont(labelFont);
+		JLabel dataNascitaMeseLabel = new JLabel("Mese(MM)");
+		dataNascitaMeseLabel.setFont(labelFont);
+		JLabel dataNascitaAnnoLabel = new JLabel("Anno(yyyy)");
+		dataNascitaAnnoLabel.setFont(labelFont);
 
-					if (nome.isEmpty() || descrizione.isEmpty() ) { // Controllo che non ci siano campi
-																						// vuoti
-						setMessage("Tutti i campi devono essere compilati");
-					} else {
-						cantiere.setNome(nome);
-						cantiere.setDescrizione(descrizione);
-						
-					
-								try {
+		JTextField nomeTF = new JTextField(); // Campi da compilare
+		nomeTF.setFont(normalFont);
+		JTextField cognomeTF = new JTextField();
+		cognomeTF.setFont(normalFont);
+		JTextField dataNascitaGiornoTF = new JTextField();
+		dataNascitaGiornoTF.setFont(normalFont);
+		JTextField dataNascitaMeseTF = new JTextField();
+		dataNascitaMeseTF.setFont(normalFont);
+		JTextField dataNascitaAnnoTF = new JTextField();
+		dataNascitaAnnoTF.setFont(normalFont);
 
-									result = cantiere.saveCantiere(cantiere);
+		JTextField nomeCantiereTF = new JTextField(); // Campi da compilare
+		nomeCantiereTF.setFont(normalFont);
+		JTextField descrizioneTF = new JTextField();
+		descrizioneTF.setFont(normalFont);
 
-								} catch (IOException | SQLException e) {
-									// TODO Auto-generated catch block
-									
+		nomeCantiereLabel.setLabelFor(nomeCantiereTF); // Associo le label ai vari campi
+		descrizioneLabel.setLabelFor(descrizioneTF);
 
-						}
+		nomeLabel.setLabelFor(nomeTF); // Associo le label ai vari campi
+		cognomeLabel.setLabelFor(cognomeTF);
+		dataNascitaGiornoLabel.setLabelFor(dataNascitaGiornoTF);
+		dataNascitaMeseLabel.setLabelFor(dataNascitaMeseTF);
+		dataNascitaAnnoLabel.setLabelFor(dataNascitaAnnoTF);
 
-					}
+		JButton salvaButton = new JButton("Salva"); // Bottone per salvare il nuovo operaio
+		salvaButton.setPreferredSize(new Dimension(100, 50));
+		salvaButton.setBackground(Color.GREEN);
+		salvaButton.setForeground(Color.BLACK);
+		salvaButton.setFont(new Font("Arial", Font.PLAIN, 20));
+		salvaButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) { // Funzione di salvataggio sul click
+				String nome = nomeCantiereTF.getText(); // Leggo i valori nei campi
+				String descrizione = descrizioneTF.getText();
 
-					if (result) { // Se il salvataggio del cantiere avviene con successo
-						Helper.showSuccessMessage(frame, "Cantiere salvato correttamente");
-						try {
-							showListaCantieriView(frame); // Torna alla lista dei cantieri
-						} catch (IOException | SQLException e) {
-							// TODO Auto-generated catch block
-							Helper.showErrorMessage(frame, "Errore durante il cambio pagina"); // Potrebbe avvenire qualche
-																								// errore durante il cambio
-																								// pagina(connessione
-																								// fallita per esempio)
-							e.printStackTrace();
-						}
-					} else { // Altrimenti se il salvataggio dell'operaio non avviene con successo
-						Helper.showErrorMessage(frame, getMessage());
-					}
-				}
-			});
+				String nomeCapoC = nomeTF.getText();
+				String cognomeCapoC = cognomeTF.getText();
+				String dataNascitaGiorno = dataNascitaGiornoTF.getText();
+				String dataNascitaMese = dataNascitaMeseTF.getText();
+				String dataNascitaAnno = dataNascitaAnnoTF.getText();
+				String dataNascita = dataNascitaGiorno + "/" + dataNascitaMese + "/" + dataNascitaAnno;
 
-			JButton tornaAllaListaButton = new JButton("Torna alla lista"); // Bottone per tornare alla lista degli operai
-			tornaAllaListaButton.setPreferredSize(new Dimension(100, 50));
-			tornaAllaListaButton.setFont(new Font("Arial", Font.PLAIN, 20));
-			tornaAllaListaButton.addActionListener(new ActionListener() {
+				Boolean result = false;
 
-				public void actionPerformed(ActionEvent evt) {
-					try {
-						showListaCantieriView(frame); // Torna alla lista dei cantieri
-					} catch (IOException | SQLException e) {
-						// TODO Auto-generated catch block
-						Helper.showErrorMessage(frame, "Errore durante il cambio pagina"); // Potrebbe avvenire qualche
-																							// errore durante il cambio
-																							// pagina(connessione fallita
-																							// per esempio)
-						e.printStackTrace();
-					}
-				}
-			});
+				if (nome.isEmpty() || descrizione.isEmpty() || nomeCapoC.isEmpty() || cognomeCapoC.isEmpty()) {
 
-			JPanel panelContainer = new JPanel(); // Panel da inviare alla funzione chiamante
-			panelContainer.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+					// Controllo che non ci siano campi
+					setMessage("Tutti i campi devono essere compilati");
+				} else {
+					if (Helper.isDate(dataNascita, Helper.dateFormatApp))
+						if (Helper.isMaggiorenne(dataNascita)) // Controllo che i valori nei campi non
+						// stringa siano validi
 
-			GroupLayout layout = new GroupLayout(panelContainer); // Definisco un group layout
-			panelContainer.setLayout(layout);
+						{
 
-			layout.setAutoCreateGaps(true);
-			layout.setAutoCreateContainerGaps(true);
+							String dataNascitaConvertita = Helper.convertDate(Helper.dateFormatApp,
+									Helper.dateTimeFormatDb, dataNascita);
+							// Funzione che consente di convertire una data
 
-			layout.setHorizontalGroup(layout.createSequentialGroup() // Definisco l'horizontalGroup
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(pageLabel)
-							.addGroup(layout.createSequentialGroup()
-									.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-											.addComponent(nomeLabel).addComponent(descrizioneLabel))
-									.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-											.addComponent(nomeTF).addComponent(descrizioneTF)))
-							.addGroup(layout.createSequentialGroup()
-									.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-											.addComponent(salvaButton))
-									.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-											.addComponent(tornaAllaListaButton))
-									)));
+							cantiere.setNome(nome);
+							cantiere.setDescrizione(descrizione);
 
-			layout.setVerticalGroup(layout.createSequentialGroup() // Definisco il verticalGroup
-					.addComponent(pageLabel)
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(nomeLabel)
-							.addComponent(nomeTF))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(descrizioneLabel)
-							.addComponent(descrizioneTF))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(salvaButton)
-							.addComponent(tornaAllaListaButton)));
+							CapoCantiere.setNome(nomeCapoC);
+							CapoCantiere.setCognome(cognomeCapoC);
+							CapoCantiere.setDataNascita(dataNascitaConvertita);
+							
 
-			return panelContainer;
+							try {
 
-		}
-		
-		
-		// Quando questa funzione viene richiamata mostra la pagina che consente la
-		// creazione dei cantieri
-		private void showCreaCapocantieriView(JFrame frame) throws IOException, SQLException {
+								result = cantiere.saveCantiere(cantiere, CapoCantiere);
 
-			Component contents = createCapoCantieriComponents(frame);
+							} catch (IOException | SQLException e) {
+								// TODO Auto-generated catch block
+								setMessage(
 
-			frame.getContentPane().removeAll(); // Pulisco il frame esistente
-			frame.getContentPane().add(contents, BorderLayout.CENTER); // Inserisco i nuovi componenti nel frame
-			frame.pack();
-			frame.setVisible(true);
-		}
-		
-		// Funzione utilizzata per creare la pagina che consente la creazione dei capocantieri
-		private Component createCapoCantieriComponents(JFrame frame) throws IOException, SQLException {
-			// TODO Auto-generated method stub
-			Font headerFont = new Font("SansSerif", Font.BOLD, 20);
-			Font labelFont = new Font("SansSerif", Font.BOLD, 18);
-			Font normalFont = new Font("SansSerif", Font.PLAIN, 18);
-			Font tableFont = new Font("Arial", Font.PLAIN, 18);
-
-			JLabel pageLabel = new JLabel("Crea Capo Cantiere"); // Titolo
-			pageLabel.setFont(headerFont);
-
-			JLabel nomeLabel = new JLabel("NOME"); // Label dei vari campi da modificare
-			nomeLabel.setFont(labelFont);
-			JLabel cognomeLabel = new JLabel("COGNOME");
-			cognomeLabel.setFont(labelFont);
-			JLabel dataNascitaLabel = new JLabel("DATA NASCITA");
-			dataNascitaLabel.setFont(labelFont);
-			JLabel dataNascitaGiornoLabel = new JLabel("Giorno(dd)");
-			dataNascitaGiornoLabel.setFont(labelFont);
-			JLabel dataNascitaMeseLabel = new JLabel("Mese(MM)");
-			dataNascitaMeseLabel.setFont(labelFont);
-			JLabel dataNascitaAnnoLabel = new JLabel("Anno(yyyy)");
-			dataNascitaAnnoLabel.setFont(labelFont);
-
-			JLabel cantieriLabel = new JLabel("SELEZIONARE IL CANTIERE:");
-			dataNascitaAnnoLabel.setFont(labelFont);
-			Cantiere cantiere = new Cantiere();
-
-			String[] columnNames = { "ID", "NOME CANTIERE", "DESCRIZIONE" }; // Lista degli header della tabella
-			Object[][] data = Helper.ConvertCantiereListToObject(cantiere.getAllCantieri()); // Elementi della
-				
-			// tabella
-
-			
-			JTable table = new JTable(data, columnNames); // Creo la tabella riempendola con i dati
-			table.getTableHeader().setFont(headerFont);
-			table.setDefaultEditor(Object.class, null); // Rendo la tabella non editabile
-			table.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent me) {
-
-					JTable target = (JTable) me.getSource();
-					int row = target.getSelectedRow(); // Seleziono la riga
-					idCant = (Integer) target.getValueAt(row, 0); // Seleziono l'id corrispondente a quella riga
-
-				}
-
-			});
-			table.setFont(tableFont);
-			table.setRowHeight(30);
-			table.getColumnModel().getColumn(0).setPreferredWidth(100);
-			table.getColumnModel().getColumn(1).setPreferredWidth(500);
-			table.getColumnModel().getColumn(2).setPreferredWidth(200);
-
-			JTextField nomeTF = new JTextField(); // Campi da compilare
-			nomeTF.setFont(normalFont);
-			JTextField cognomeTF = new JTextField();
-			cognomeTF.setFont(normalFont);
-			JTextField dataNascitaGiornoTF = new JTextField();
-			dataNascitaGiornoTF.setFont(normalFont);
-			JTextField dataNascitaMeseTF = new JTextField();
-			dataNascitaMeseTF.setFont(normalFont);
-			JTextField dataNascitaAnnoTF = new JTextField();
-			dataNascitaAnnoTF.setFont(normalFont);
-
-			nomeLabel.setLabelFor(nomeTF); // Associo le label ai vari campi
-			cognomeLabel.setLabelFor(cognomeTF);
-			dataNascitaGiornoLabel.setLabelFor(dataNascitaGiornoTF);
-			dataNascitaMeseLabel.setLabelFor(dataNascitaMeseTF);
-			dataNascitaAnnoLabel.setLabelFor(dataNascitaAnnoTF);
-
-			JButton salvaButton = new JButton("Salva"); // Bottone per salvare il nuovo operaio
-			salvaButton.setPreferredSize(new Dimension(100, 50));
-			salvaButton.setBackground(Color.GREEN);
-			salvaButton.setForeground(Color.BLACK);
-			salvaButton.setFont(new Font("Arial", Font.PLAIN, 20));
-			salvaButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt) { // Funzione di salvataggio sul click
-					String nome = nomeTF.getText(); // Leggo i valori nei campi
-					String cognome = cognomeTF.getText();
-					String dataNascitaGiorno = dataNascitaGiornoTF.getText();
-					String dataNascitaMese = dataNascitaMeseTF.getText();
-					String dataNascitaAnno = dataNascitaAnnoTF.getText();
-					String dataNascita = dataNascitaGiorno + "/" + dataNascitaMese + "/" + dataNascitaAnno;
-					Boolean result = false;
-
-					Lavoratore capocantiere = new Lavoratore();
-
-					if (nome.isEmpty() || cognome.isEmpty() || dataNascita.isEmpty()) { // Controllo che non ci siano campi
-																						// vuoti
-						setMessage("Tutti i campi devono essere compilati");
-					} else {
-						if (Helper.isDate(dataNascita, Helper.dateFormatApp))
-							if (Helper.isMaggiorenne(dataNascita)) // Controllo che i valori nei campi non
-							// stringa siano validi
-
-							{
-
-								String dataNascitaConvertita = Helper.convertDate(Helper.dateFormatApp,
-										Helper.dateTimeFormatDb, dataNascita);
-								// Funzione che consente di convertire una data
-
-								capocantiere.setNome(nome);
-								capocantiere.setCognome(cognome);
-								capocantiere.setDataNascita(dataNascitaConvertita);
-								capocantiere.setIdCant(idCant);
-
-								try {
-
-									result = lavoratore.saveCapocantiere(capocantiere);
-
-								} catch (IOException | SQLException e) {
-									// TODO Auto-generated catch block
-									setMessage(
-
-											"ATTENZIONE: "
-													+ "1) Nel DB non ci possono essere due operai con nome, cognome e data di nascita uguali;"
-													+ "2) Selezionare il cantiere;"
-													+ "3) Ogni cantiere deve avere un solo capocantiere;");
-								}
-							} else {
-								setMessage("L'operaio deve essere maggiorenne");
-								// i campi non sono stati compilati correttamente
+										"ATTENZIONE: "
+												+ "1) Nel DB non ci possono essere due lavoratori con nome, cognome e data di nascita uguali; \n"
+												+ "2) Ogni cantiere deve avere un solo capocantiere;");
 							}
-
-						else {
-							setMessage("Il campo data nascita deve avere un formato dd/mm/yyyy");
+						} else {
+							setMessage("Il capocantiere deve essere maggiorenne");
 							// i campi non sono stati compilati correttamente
 						}
 
+					else {
+						setMessage("Il campo data nascita deve avere un formato dd/mm/yyyy");
+						// i campi non sono stati compilati correttamente
 					}
 
-					if (result) { // Se il salvataggio dell'operaio avviene con successo
-						Helper.showSuccessMessage(frame, "Capo Cantiere salvato correttamente");
-						try {
-							showCapoCantieriView(frame); // Torna alla lista degli operai
-						} catch (IOException | SQLException e) {
-							// TODO Auto-generated catch block
-							Helper.showErrorMessage(frame, "Errore durante il cambio pagina"); // Potrebbe avvenire qualche
-																								// errore durante il cambio
-																								// pagina(connessione
-																								// fallita per esempio)
-							e.printStackTrace();
-						}
-					} else { // Altrimenti se il salvataggio dell'operaio non avviene con successo
-						Helper.showErrorMessage(frame, getMessage());
-					}
 				}
-			});
 
-			JButton tornaAllaListaButton = new JButton("Torna alla lista"); // Bottone per tornare alla lista degli operai
-			tornaAllaListaButton.setPreferredSize(new Dimension(100, 50));
-			tornaAllaListaButton.setFont(new Font("Arial", Font.PLAIN, 20));
-			tornaAllaListaButton.addActionListener(new ActionListener() {
+				if (result) { // Se il salvataggio dell'operaio avviene con successo
+					Helper.showSuccessMessage(frame, "Cantiere salvato correttamente");
 
-				public void actionPerformed(ActionEvent evt) {
 					try {
 						showCapoCantieriView(frame); // Torna alla lista degli operai
 					} catch (IOException | SQLException e) {
 						// TODO Auto-generated catch block
 						Helper.showErrorMessage(frame, "Errore durante il cambio pagina"); // Potrebbe avvenire qualche
 																							// errore durante il cambio
-																							// pagina(connessione fallita
-																							// per esempio)
+																							// pagina(connessione
+																							// fallita per esempio)
 						e.printStackTrace();
 					}
+				} else { // Altrimenti se il salvataggio dell'operaio non avviene con successo
+					Helper.showErrorMessage(frame, getMessage());
 				}
-			});
+			}
+		});
 
-			JPanel panelContainer = new JPanel(); // Panel da inviare alla funzione chiamante
-			panelContainer.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+		JButton tornaAllaListaButton = new JButton("Torna alla lista"); // Bottone per tornare alla lista degli operai
+		tornaAllaListaButton.setPreferredSize(new Dimension(100, 50));
+		tornaAllaListaButton.setFont(new Font("Arial", Font.PLAIN, 20));
+		tornaAllaListaButton.addActionListener(new ActionListener() {
 
-			GroupLayout layout = new GroupLayout(panelContainer); // Definisco un group layout
-			panelContainer.setLayout(layout);
+			public void actionPerformed(ActionEvent evt) {
+				try {
+					showListaCantieriView(frame); // Torna alla lista dei cantieri
+				} catch (IOException | SQLException e) {
+					// TODO Auto-generated catch block
+					Helper.showErrorMessage(frame, "Errore durante il cambio pagina"); // Potrebbe avvenire qualche
+																						// errore durante il cambio
+																						// pagina(connessione fallita
+																						// per esempio)
+					e.printStackTrace();
+				}
+			}
+		});
 
-			layout.setAutoCreateGaps(true);
-			layout.setAutoCreateContainerGaps(true);
+		JPanel panelContainer = new JPanel(); // Panel da inviare alla funzione chiamante
+		panelContainer.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
-			layout.setHorizontalGroup(layout.createSequentialGroup() // Definisco l'horizontalGroup
-					.addGroup(
-							layout.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(pageLabel)
-									.addGroup(layout.createSequentialGroup().addGroup(layout
-											.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(nomeLabel)
-											.addComponent(cognomeLabel).addComponent(dataNascitaLabel))
-											.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-													.addComponent(nomeTF).addComponent(cognomeTF)
-													.addGroup(layout.createSequentialGroup()
-															.addGroup(layout
-																	.createParallelGroup(GroupLayout.Alignment.LEADING)
-																	.addComponent(dataNascitaGiornoLabel))
-															.addGroup(layout
-																	.createParallelGroup(GroupLayout.Alignment.LEADING)
-																	.addComponent(dataNascitaGiornoTF))
-															.addGroup(layout
-																	.createParallelGroup(GroupLayout.Alignment.LEADING)
-																	.addComponent(dataNascitaMeseLabel))
-															.addGroup(layout
-																	.createParallelGroup(GroupLayout.Alignment.LEADING)
-																	.addComponent(dataNascitaMeseTF))
-															.addGroup(layout
-																	.createParallelGroup(GroupLayout.Alignment.LEADING)
-																	.addComponent(dataNascitaAnnoLabel))
-															.addGroup(layout
-																	.createParallelGroup(GroupLayout.Alignment.LEADING)
-																	.addComponent(dataNascitaAnnoTF)))))
+		GroupLayout layout = new GroupLayout(panelContainer); // Definisco un group layout
+		panelContainer.setLayout(layout);
 
-									.addGroup(layout.createSequentialGroup()
-											.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-													.addComponent(cantieriLabel)))
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
 
-									.addGroup(layout.createSequentialGroup().addGroup(
-											layout.createParallelGroup(GroupLayout.Alignment.TRAILING).addComponent(table)))
+		layout.setHorizontalGroup(layout.createSequentialGroup() // Definisco l'horizontalGroup
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER).addComponent(pageLabel)
+						.addComponent(pageLabelCapoc)
+						.addGroup(layout.createSequentialGroup().addGroup(layout
+								.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(nomeCantiereLabel)
+								.addComponent(descrizioneLabel).addComponent(nomeLabel).addComponent(cognomeLabel)
+								.addComponent(dataNascitaLabel))
 
-									.addGroup(layout.createSequentialGroup()
-											.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-													.addComponent(salvaButton))
-											.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-													.addComponent(tornaAllaListaButton)))));
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+										.addComponent(nomeCantiereTF).addComponent(descrizioneTF).addComponent(nomeTF)
+										.addComponent(cognomeTF)
+										.addGroup(layout.createSequentialGroup()
+												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+														.addComponent(dataNascitaGiornoLabel))
+												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+														.addComponent(dataNascitaGiornoTF))
+												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+														.addComponent(dataNascitaMeseLabel))
+												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+														.addComponent(dataNascitaMeseTF))
+												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+														.addComponent(dataNascitaAnnoLabel))
+												.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+														.addComponent(dataNascitaAnnoTF)))))
 
-			layout.setVerticalGroup(layout.createSequentialGroup() // Definisco il verticalGroup
-					.addComponent(pageLabel)
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(nomeLabel)
-							.addComponent(nomeTF))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(cognomeLabel)
-							.addComponent(cognomeTF))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(dataNascitaLabel)
-							.addComponent(dataNascitaGiornoLabel).addComponent(dataNascitaGiornoTF)
-							.addComponent(dataNascitaMeseLabel).addComponent(dataNascitaMeseTF)
-							.addComponent(dataNascitaAnnoLabel).addComponent(dataNascitaAnnoTF))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(cantieriLabel))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(table))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(salvaButton)
-							.addComponent(tornaAllaListaButton)));
+						.addGroup(layout.createSequentialGroup()
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+										.addComponent(salvaButton))
+								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+										.addComponent(tornaAllaListaButton)))));
 
-			return panelContainer;
+		layout.setVerticalGroup(layout.createSequentialGroup() // Definisco il verticalGroup
+				.addComponent(pageLabel)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(nomeCantiereLabel)
+						.addComponent(nomeCantiereTF))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(descrizioneLabel)
+						.addComponent(descrizioneTF))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(pageLabelCapoc))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(nomeLabel)
+						.addComponent(nomeTF))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(cognomeLabel)
+						.addComponent(cognomeTF))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(dataNascitaLabel)
+						.addComponent(dataNascitaGiornoLabel).addComponent(dataNascitaGiornoTF)
+						.addComponent(dataNascitaMeseLabel).addComponent(dataNascitaMeseTF)
+						.addComponent(dataNascitaAnnoLabel).addComponent(dataNascitaAnnoTF))
 
-		}
-		
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(salvaButton)
+						.addComponent(tornaAllaListaButton)));
+
+		return panelContainer;
+
+	}
+
+
+
+
 }
